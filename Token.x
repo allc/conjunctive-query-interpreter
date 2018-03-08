@@ -1,5 +1,5 @@
 {
-module Main where
+module Token where
 }
 %wrapper "basic"
 
@@ -29,9 +29,5 @@ data Token =
   TokenDot        |
   TokenVarRelation String
   deriving (Eq,Show)
-
-main = do
-  s <- readFile "test.txt"
-  print (alexScanTokens s)
   
 }
