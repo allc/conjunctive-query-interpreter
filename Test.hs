@@ -1,7 +1,8 @@
 module Main where
 
 import Token
+import Grammar
 
 main = do
     s <- readFile "test.txt"
-    print (alexScanTokens s)
+    print (parse (alexScanTokens s))
