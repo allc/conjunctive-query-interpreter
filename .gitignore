@@ -3,5 +3,7 @@ _build/
 test.txt
 test
 
+*.csv
+
 myinterpreter
 

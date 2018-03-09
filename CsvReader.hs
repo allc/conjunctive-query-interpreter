@@ -1,3 +1,5 @@
+module CsvReader where
+
 import Data.Char
 
 -- task4
