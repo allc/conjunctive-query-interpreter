@@ -1,0 +1,1 @@
+x1 where exists z . R (x1 z)
