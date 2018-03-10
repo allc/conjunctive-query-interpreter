@@ -1,6 +1,9 @@
 module CsvReader where
 
 import Data.Char
+import Data.Text
+
+type CsvData = [[String]]
 
 -- task4
 -- TO-DO: need to handel empty entry
@@ -12,26 +15,30 @@ clearSpace [] = []
 clearSpace (s:ss) | s == ' ' = clearSpace ss
                   | otherwise = s : clearSpace ss
 
+readAnEntry :: String -> String
+readAnEntry [] = [] 
+readAnEntry (s:ss) | s == ',' = []
+                   | otherwise = strip (s : readAnEntry ss)
 
-readANumber [] = [] 
-readANumber (s:ss) | s == ',' = []
-                   | isNumber s = s : readANumber ss
-                   | otherwise = error "bad format of the file. Exists non integer value."
-
-
+readALine :: String -> Int -> [String]
 readALine ss startIndex | startIndex >= length ss = []
                         | otherwise =  list1 : readALine ss (startIndex+(length list1)+1)
-                            where list1 = readANumber (drop startIndex ss)
+                            where list1 = readAnEntry (drop startIndex ss)
 
 -- readFile writeFile
-multiZipF = do
-                content <- readFile filePath
-                let numLines = lines content
-                let result = [num| x<-numLines, num <- [readALine (clearSpace x) 0]]
-                --let result = readALine (clearSpace content) 0 
-                putStrLn "done"
-                return "";
+-- multiZipF = do
+--                 content <- readFile filePath
+--                 let numLines = lines content
+--                 let result = [num| x<-numLines, num <- [readALine (clearSpace x) 0]]
+--                 --let result = readALine (clearSpace content) 0 
+--                 putStrLn "done"
+--                 return "";
             
 -- file format
 --1,2,3,        7, 89,   212321
 --123
+
+--readCsv :: String -> CsvData
+readCsv f = do
+    content <- readFile f
+    print content
