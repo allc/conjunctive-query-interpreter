@@ -40,5 +40,4 @@ data ConjQuer = ExpAnd ConjQuer ConjQuer
               | ExpRelation String VarList
               | ExpExists String ConjQuer
               deriving Show
-
 }

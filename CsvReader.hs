@@ -18,12 +18,12 @@ clearSpace (s:ss) | s == ' ' = clearSpace ss
 readAnEntry :: String -> String
 readAnEntry [] = [] 
 readAnEntry (s:ss) | s == ',' = []
-                   | otherwise = strip (s : readAnEntry ss)
+                   | otherwise = unpack $ strip $ pack (s : readAnEntry ss)
 
 readALine :: String -> Int -> [String]
-readALine ss startIndex | startIndex >= length ss = []
-                        | otherwise =  list1 : readALine ss (startIndex+(length list1)+1)
-                            where list1 = readAnEntry (drop startIndex ss)
+readALine ss startIndex | startIndex >= Prelude.length ss = []
+                        | otherwise =  list1 : readALine ss (startIndex+(Prelude.length list1)+1)
+                            where list1 = readAnEntry (Prelude.drop startIndex ss)
 
 -- readFile writeFile
 -- multiZipF = do
