@@ -7,7 +7,6 @@ type CsvData = [[String]]
 
 -- task4
 -- TO-DO: need to handel empty entry
-filePath = "C:/study backup/CS/Y2S2/Programming Language Concepts/new_labs/lab1/test.txt"
 
 
 -- get rid of all spaces first 
@@ -18,12 +17,16 @@ clearSpace (s:ss) | s == ' ' = clearSpace ss
 readAnEntry :: String -> String
 readAnEntry [] = [] 
 readAnEntry (s:ss) | s == ',' = []
-                   | otherwise = unpack $ strip $ pack (s : readAnEntry ss)
+                   | otherwise = s : readAnEntry ss
 
 readALine :: String -> Int -> [String]
 readALine ss startIndex | startIndex >= Prelude.length ss = []
-                        | otherwise =  list1 : readALine ss (startIndex+(Prelude.length list1)+1)
-                            where list1 = readAnEntry (Prelude.drop startIndex ss)
+                        | otherwise =  stringWithoutSpace : readALine ss (startIndex+(Prelude.length stringWithSpace)+1)
+                            where stringWithoutSpace = unpack $ strip $ pack $ readAnEntry (Prelude.drop startIndex ss)
+                                  stringWithSpace = readAnEntry (Prelude.drop startIndex ss)
+                                  
+                                  
+                                  
 
 -- readFile writeFile
 -- multiZipF = do
@@ -41,4 +44,5 @@ readALine ss startIndex | startIndex >= Prelude.length ss = []
 --readCsv :: String -> CsvData
 readCsv f = do
     content <- readFile f
+    --let result = [num| x<-numLines, num <- [readALine (clearSpace x) 0]]
     print content
