@@ -38,7 +38,5 @@ readALine ss startIndex | startIndex >= Prelude.length ss = []
 --1,2,3,        7, 89,   212321
 --123
 
---readCsv :: String -> CsvData
-readCsv f = do
-    content <- readFile f
-    print content
+readCsv :: String -> CsvData
+readCsv f = [["Pawel", "Sobocinski"], ["Alice", "Bob"]]
