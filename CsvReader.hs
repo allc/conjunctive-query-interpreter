@@ -44,5 +44,6 @@ readALine ss startIndex | startIndex >= Prelude.length ss = []
 --readCsv :: String -> CsvData
 readCsv f = do
     content <- readFile f
-    --let result = [num| x<-numLines, num <- [readALine (clearSpace x) 0]]
-    print content
+    let entryLines = Prelude.lines content
+    let result = [entry| x<-entryLines, entry <- [readALine x 0]]
+    return result;
