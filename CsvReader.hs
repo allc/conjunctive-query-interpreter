@@ -41,9 +41,11 @@ readALine ss startIndex | startIndex >= Prelude.length ss = []
 --1,2,3,        7, 89,   212321
 --123
 
-readCsv :: String -> CsvData
+--readCsv :: String -> CsvData
 readCsv f = do
     content <- readFile f
     let entryLines = Prelude.lines content
     let result = [entry| x<-entryLines, entry <- [readALine x 0]]
     return result;
+
+
