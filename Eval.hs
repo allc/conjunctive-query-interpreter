@@ -38,7 +38,7 @@ evalConjQuer (ExpRelation r vl) = relation csvData (evalVarList vl)
     where
         csvData = readCsv (r ++ ".csv")
 
--- evalConjQuer (ExpAnd cq1 cq2) = evalAnd (evalConjQuer cq1) (evalConjQuer cq2)
+evalConjQuer (ExpAnd cq1 cq2) = evalAnd (evalConjQuer cq1) (evalConjQuer cq2)
 
 -- | Evaluation helper functions
 relation :: CsvData -> [Var] -> ConjResult
@@ -50,14 +50,22 @@ relationALine _ [] = []
 relationALine [] (v:vs) = (v, "") : relationALine [] vs
 relationALine (s:ss) (v:vs) = (v, s) : relationALine ss vs
 
--- evalAnd :: ConjResult -> ConjResult -> ConjResult
--- evalAnd [] _ = []
--- evalAnd (cr1:cr1s) cr2s = evalAnd' cr1 cr2s ++ evalAnd cr1s cr2s
+evalAnd :: ConjResult -> ConjResult -> ConjResult
+evalAnd [] _ = []
+evalAnd (cr1:cr1s) cr2s = evalAnd' cr1 cr2s ++ evalAnd cr1s cr2s
 
--- evalAnd' :: [(Var, String)] -> ConjResult -> ConjResult
--- evalAnd' _ [] = []
--- evalAnd' cr1 (cr2:cr2s) = (cr1 ++ cr2) : evalAnd' cr1 cr2s
+evalAnd' :: [(Var, String)] -> ConjResult -> ConjResult
+evalAnd' _ [] = []
+evalAnd' cr1 (cr2:cr2s) | evalAndCheck newConj = newConj : evalAnd' cr1 cr2s
+                        | otherwise = newConj : evalAnd' cr1 cr2s
+                        where
+                            newConj = (cr1 ++ cr2)
 
--- evalAndCheck :: [(Var, String)] -> [(Var, String)] -> Boolean
--- evalAndCheck [] _ = True
--- evalAndCheck (b1:b1s) b2s = &&
+evalAndCheck :: [(Var, String)] -> [(Var, String)] -> Bool
+evalAndCheck [] _ = True
+evalAndCheck (b1:b1s) b2s = evalAndCheck' b1 b2s && evalAndCheck b1s b2s
+
+evalAndCheck' :: (Var, String) -> [(Var, String)] -> Bool
+evalAndCheck' _ [] = True
+evalAndCheck' bind@(v, s) b | findVar v b == Nothing = True
+                            | otherwise = getVar (findVar v b) == s
