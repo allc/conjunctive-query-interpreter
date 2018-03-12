@@ -56,8 +56,8 @@ evalAnd (cr1:cr1s) cr2s = evalAnd' cr1 cr2s ++ evalAnd cr1s cr2s
 
 evalAnd' :: [(Var, String)] -> ConjResult -> ConjResult
 evalAnd' _ [] = []
-evalAnd' cr1 (cr2:cr2s) | evalAndCheck newConj = newConj : evalAnd' cr1 cr2s
-                        | otherwise = newConj : evalAnd' cr1 cr2s
+evalAnd' cr1 (cr2:cr2s) | evalAndCheck cr1 cr2 = newConj : evalAnd' cr1 cr2s
+                        | otherwise = evalAnd' cr1 cr2s
                         where
                             newConj = (cr1 ++ cr2)
 
