@@ -63,6 +63,23 @@ evalConjQuer (ExpAnd cq1 cq2) = do
 
 evalConjQuer (ExpExists s cq) = evalConjQuer cq
 
+-- the other smallest fragements
+evalConjQuer (ExpExists s (ExpRelation r vl)) = 
+
+-- one of smallest fragments
+evalConjQuer (ExpExists s (ExpEq s1 s2))
+
+evalConjQuer (ExpExists s (ExpAnd cq1 cq2))
+
+evalConjQuer (ExpAnd (ExpExist s cq1) cq2)
+
+evalConjQuer (ExpAnd cq1 (ExpExist s cq2))
+
+
+
+evalConjQuer (ExpExists s (ExpExists s cq))
+
+
 -- this case seems impossible, cause the ExpEq should always follow some other expressions to make sense. 
 -- evalConjQuer (ExpAnd (ExpEq s1 s2) cq2) = do
 
@@ -75,7 +92,8 @@ evalEq s1 s2 b = [x| tuple <- b, s1val<-[(findVar s1 tuple)], s1val/=Nothing, s2
                                    
 -- evalConjQuer (ExpEq s1 s2) = do 
                                       
-    
+-- eval exist 
+evalConjQuer (ExpExists v cq) 
 
 -- | Evaluation helper functions
 relation :: [[String]] -> [Var] -> [[(Var, String)]]
