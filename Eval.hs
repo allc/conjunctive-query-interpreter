@@ -50,7 +50,15 @@ evalConjQuer (ExpRelation r vl) = do
                                     return result;
     
 
--- evalConjQuer (ExpAnd cq1 cq2) = evalAnd (evalConjQuer cq1) (evalConjQuer cq2)
+evalConjQuer (ExpAnd cq1 cq2) = do 
+                                   
+                                   cq1result <- evalConjQuer cq1
+                                   cq2result <- evalConjQuer cq2
+                                   let result = evalAnd cq1result cq2result
+                                   return result;
+    
+    
+    
 
 -- | Evaluation helper functions
 relation :: [[String]] -> [Var] -> [[(Var, String)]]
@@ -63,21 +71,24 @@ relationALine [] (v:vs) = (v, "") : relationALine [] vs
 relationALine (s:ss) (v:vs) = (v, s) : relationALine ss vs
 
 -- evalAnd :: ConjResult -> ConjResult -> ConjResult
--- evalAnd [] _ = []
--- evalAnd (cr1:cr1s) cr2s = evalAnd' cr1 cr2s ++ evalAnd cr1s cr2s
+evalAnd [] _ = []
+evalAnd (cr1:cr1s) cr2s = evalAnd' cr1 cr2s ++ evalAnd cr1s cr2s
+
 
 -- evalAnd' :: [(Var, String)] -> ConjResult -> ConjResult
--- evalAnd' _ [] = []
--- evalAnd' cr1 (cr2:cr2s) | evalAndCheck cr1 cr2 = newConj : evalAnd' cr1 cr2s
---                         | otherwise = evalAnd' cr1 cr2s
---                         where
---                             newConj = (cr1 ++ cr2)
+evalAnd' _ [] = []
+evalAnd' cr1 (cr2:cr2s) | evalAndCheck cr1 cr2 = newConj : evalAnd' cr1 cr2s
+                        | otherwise = evalAnd' cr1 cr2s
+                        where
+                            newConj = (cr1 ++ cr2)
 
--- evalAndCheck :: [(Var, String)] -> [(Var, String)] -> Bool
--- evalAndCheck [] _ = True
--- evalAndCheck (b1:b1s) b2s = evalAndCheck' b1 b2s && evalAndCheck b1s b2s
+evalAndCheck :: [(Var, String)] -> [(Var, String)] -> Bool
+evalAndCheck [] _ = True
+evalAndCheck (b1:b1s) b2s = evalAndCheck' b1 b2s && evalAndCheck b1s b2s
 
--- evalAndCheck' :: (Var, String) -> [(Var, String)] -> Bool
--- evalAndCheck' _ [] = True
--- evalAndCheck' bind@(v, s) b | findVar v b == Nothing = True
---                             | otherwise = getVar (findVar v b) == s
+evalAndCheck' :: (Var, String) -> [(Var, String)] -> Bool
+evalAndCheck' _ [] = True
+evalAndCheck' bind@(v, s) b | findVar v b == Nothing = True
+                            | otherwise = getVar (findVar v b) == s
+
+-- eval (ExpJudgement (ExpVarList "x1" (ExpVarList "x3" (ExpVarList "x2" (ExpVar "x4")))) (ExpAnd (ExpAnd (ExpRelation "B" (ExpVarList "x1" (ExpVar "x2")))(ExpRelation "A" (ExpVarList "x1" (ExpVar "x2")))) (ExpRelation "B" (ExpVarList "x3" (ExpVar "x4")))))
