@@ -1,1 +1,1 @@
-x1 x2 x3 where A(x1 x2) ^ B(x2 x3)
+select x1 x2 x3 where A(x1 x2) and B(x2 x3)

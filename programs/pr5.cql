@@ -1,1 +1,1 @@
-x1 x2 where exists z . A (x1 z) ^ B (z x2)
+select x1 x2 where exists z in A (x1 z) and B (z x2)

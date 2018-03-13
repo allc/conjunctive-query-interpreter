@@ -1,1 +1,1 @@
-x1 x2 where P(x1)^Q(x2)^x1=x2
+select x1 x2 where P(x1) and Q(x2) and x1=x2
