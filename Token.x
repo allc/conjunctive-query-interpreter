@@ -34,4 +34,32 @@ data Token =
   TokenDot AlexPosn        |
   TokenVarRelation AlexPosn String
   deriving (Eq,Show)
+
+tokenPosn :: Token -> AlexPosn
+tokenPosn (TokenSelect p) = p
+tokenPosn (TokenWhere p) = p
+tokenPosn (TokenAnd p) = p
+tokenPosn (TokenEq p) = p
+tokenPosn (TokenLParen p) = p
+tokenPosn (TokenRParen p) = p
+tokenPosn (TokenExists p) = p
+tokenPosn (TokenDot p) = p
+tokenPosn (TokenVarRelation p _) = p
+
+lineNum :: AlexPosn -> Int
+lineNum (AlexPn _ n _) = n
+
+colNum :: AlexPosn -> Int
+colNum (AlexPn _ _ n) = n
+
+tokenString :: Token -> String
+tokenString (TokenSelect _) = "\"select\""
+tokenString (TokenWhere _) = "\"where\""
+tokenString (TokenAnd _) = "\"and\""
+tokenString (TokenEq _) = "\"=\""
+tokenString (TokenLParen _) = "\"(\""
+tokenString (TokenRParen _) = "\")\""
+tokenString (TokenExists _) = "\"exists\""
+tokenString (TokenDot _) = "\"in\""
+tokenString (TokenVarRelation _ s) = "\"" ++ s ++ "\""
 }
