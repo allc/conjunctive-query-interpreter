@@ -57,7 +57,8 @@ evalConjQuer (ExpAnd cq1 cq2) = do
                                    let result = evalAnd cq1result cq2result
                                    return result;
     
-    
+evalConjQuer (ExpEq s1 s2) = do 
+                                      
     
 
 -- | Evaluation helper functions
@@ -92,3 +93,6 @@ evalAndCheck' bind@(v, s) b | findVar v b == Nothing = True
                             | otherwise = getVar (findVar v b) == s
 
 -- eval (ExpJudgement (ExpVarList "x1" (ExpVarList "x3" (ExpVarList "x2" (ExpVar "x4")))) (ExpAnd (ExpAnd (ExpRelation "B" (ExpVarList "x1" (ExpVar "x2")))(ExpRelation "A" (ExpVarList "x1" (ExpVar "x2")))) (ExpRelation "B" (ExpVarList "x3" (ExpVar "x4")))))
+
+
+evalEq 
