@@ -6,7 +6,7 @@ import CsvReader
 type Judgement = IO [[String]]
 type Var = String
 type RelationSymbol = String
-type ConjResult = [[(Var, String)]]
+type ConjResult = IO [[(Var, String)]]
 
 -- test case
 -- *Eval> eval (ExpJudgement (ExpVarList "x1" (ExpVar "x2")) (ExpRelation "sample" (ExpVarList "x1" (ExpVar "x2"))))
@@ -19,7 +19,7 @@ evalVarList (ExpVar v) = [v]
 evalVarList (ExpVarList v vl) = v : (evalVarList vl)
 
 -- judge method : print the results.
--- judge :: [Var] -> ConjResult -> Judgement
+judge :: [Var] -> ConjResult -> Judgement
 judge' _ [] = []
 judge' vl (c:cs) = judgeALine vl c : judge' vl cs
 
@@ -28,21 +28,21 @@ judge vl cq = do
                 let result = judge' vl cqResults
                 return result;  
 
--- judgeALine :: [Var] -> [(Var, String)] -> [String]
+judgeALine :: [Var] -> [(Var, String)] -> [String]
 judgeALine [] _ = []
 judgeALine (v:vs) b = getVar (findVar v b) : judgeALine vs b
 
--- getVar :: Maybe String -> String
+getVar :: Maybe String -> String
 getVar Nothing = error "Free variable found"
 getVar (Just s) = s
 
--- findVar :: Var -> [(Var, String)] -> Maybe String
+findVar :: Var -> [(Var, String)] -> Maybe String
 findVar _ [] = Nothing
 findVar v (l:ls) | v == fst l = Just (snd l)
                  | otherwise = findVar v ls
 
 -- | Evaluation Conjective Query
--- evalConjQuer :: ConjQuer -> ConjResult
+evalConjQuer :: ConjQuer -> ConjResult
 evalConjQuer (ExpRelation r vl) = do 
                                     csvData <- readCsv (r ++ ".csv")
                                     let a = evalVarList vl
@@ -53,7 +53,7 @@ evalConjQuer (ExpRelation r vl) = do
 -- evalConjQuer (ExpAnd cq1 cq2) = evalAnd (evalConjQuer cq1) (evalConjQuer cq2)
 
 -- | Evaluation helper functions
-relation :: [[String]] -> [Var] -> ConjResult
+relation :: [[String]] -> [Var] -> [[(Var, String)]]
 relation [] _ = []
 relation (d:ds) vl = relationALine d vl : relation ds vl
 
