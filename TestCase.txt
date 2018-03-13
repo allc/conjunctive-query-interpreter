@@ -1,3 +1,19 @@
 evalAndCheck [("x1", "A"), ("x2", "B")] [("x1", "A"), ("x2", "B")] == True
 evalAndCheck [("x1", "A"), ("x2", "B")] [("x1", "A"), ("x2", "C")] == False
 evalAndCheck' ("x1", "A") [("x1", "C"), ("x2", "B")] == False
+
+getSet = 31
+readCsv f | f == "A.csv" && getSet == 11 = [["Pawel", "Sobocinski"]]
+          | f == "B.csv" && getSet == 11 = [["Julian", "Rathke"]]
+          | f == "A.csv" && getSet == 12 = [["1", "2"], ["1", "2"]]
+          | f == "B.csv" && getSet == 12 = [["3", "4"], ["3", "4"]]
+          | f == "A.csv" && getSet == 13 = []
+          | f == "B.csv" && getSet == 13 = [["pesto", "genovese"]]
+          | f == "A.csv" && getSet == 21 = [["Sofiane", "Boufal"], ["Dusan", "Tadic"], ["Guido", "Carillo"]]
+          | f == "B.csv" && getSet == 21 = [["Boufal", "Maserati"], ["Carillo" , "Ferrari"]]
+          | f == "A.csv" && getSet == 22 = [["1", "3"], ["1", "2"]]
+          | f == "B.csv" && getSet == 22 = [["3", "1"], ["3", "2"], ["2", "2"]]
+          | f == "A.csv" && getSet == 23 = [["1", "2"], ["1", "2"]]
+          | f == "B.csv" && getSet == 23 = [["2", "1"], ["2", "1"]]
+          | f == "A.csv" && getSet == 31 = [["1"], ["2"], ["3"], ["4"]]
+          | f == "B.csv" && getSet == 31 = [["1"], ["2"], ["2"], ["Sofa"]]

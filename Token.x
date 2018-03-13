@@ -9,17 +9,19 @@ $alpha = [a-zA-Z]
 tokens :-
   $white+ ;
   "--".*  ;
+  select    { \s -> TokenSelect}
   where     { \s -> TokenWhere }
-  \^        { \s -> TokenAnd }
+  and       { \s -> TokenAnd }
   \=        { \s -> TokenEq }
   \(        { \s -> TokenLParen}
   \)        { \s -> TokenRParen }
   exists    { \s -> TokenExists }
-  \.        { \s -> TokenDot }
+  in        { \s -> TokenDot }
   [$alpha $digit] [$alpha $digit \_ \’]* { \s -> TokenVarRelation s }
 
 {
 data Token =
+  TokenSelect     |
   TokenWhere      |
   TokenAnd        |
   TokenEq         |

@@ -7,6 +7,7 @@ import Token
 %tokentype { Token }
 %error { parseError }
 %token
+  select { TokenSelect }
   where  { TokenWhere }
   '^'    { TokenAnd }
   '='    { TokenEq }
@@ -19,7 +20,7 @@ import Token
 %left '^'
 %right '.'
 %%
-Exp : VarList where ConjQuer { ExpJudgement $1 $3 }
+Exp : select VarList where ConjQuer { ExpJudgement $2 $4 }
 VarList : varRelation         { ExpVar $1 }
         | varRelation VarList { ExpVarList $1 $2 }
 ConjQuer : ConjQuer '^' ConjQuer           { ExpAnd $1 $3 }
