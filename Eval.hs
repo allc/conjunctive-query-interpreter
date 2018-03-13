@@ -48,7 +48,10 @@ evalConjQuer (ExpRelation r vl) = do
                                     let a = evalVarList vl
                                     let result = relation csvData a
                                     return result;
-    
+evalConjQuer (ExpAnd cq1 (ExpEq s1 s2)) = do 
+                                             cq1result <- evalConjQuer cq1
+                                             let result = evalEq s1 s2 cq1result
+                                             return result;    
 
 evalConjQuer (ExpAnd cq1 cq2) = do 
                                    
@@ -56,8 +59,16 @@ evalConjQuer (ExpAnd cq1 cq2) = do
                                    cq2result <- evalConjQuer cq2
                                    let result = evalAnd cq1result cq2result
                                    return result;
-    
-evalConjQuer (ExpEq s1 s2) = do 
+
+-- this case seems impossible, cause the ExpEq should always follow some other expressions to make sense. 
+-- evalConjQuer (ExpAnd (ExpEq s1 s2) cq2) = do
+
+-- (ExpAnd (ExpAnd (ExpRelation "A" (ExpVarList "x1" (ExpVar "x2"))) (ExpRelation "B" (ExpVarList "x3" (ExpVar "x4")))) (ExpEq "x2" "x3"))
+
+evalEq :: Var -> Var -> [[(String, String)]] -> [[(String, String)]]                                             
+evalEq s1 s2 b = [x| tuple <- b, s1val<-[(findVar s1 tuple)], s1val/=Nothing, s2val<-[(findVar s2 tuple)], s2val/=Nothing, s1val == s2val, x<-[tuple]]
+                                   
+-- evalConjQuer (ExpEq s1 s2) = do 
                                       
     
 
@@ -95,4 +106,3 @@ evalAndCheck' bind@(v, s) b | findVar v b == Nothing = True
 -- eval (ExpJudgement (ExpVarList "x1" (ExpVarList "x3" (ExpVarList "x2" (ExpVar "x4")))) (ExpAnd (ExpAnd (ExpRelation "B" (ExpVarList "x1" (ExpVar "x2")))(ExpRelation "A" (ExpVarList "x1" (ExpVar "x2")))) (ExpRelation "B" (ExpVarList "x3" (ExpVar "x4")))))
 
 
-evalEq 
