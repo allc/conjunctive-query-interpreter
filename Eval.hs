@@ -51,14 +51,17 @@ evalConjQuer (ExpRelation r vl) = do
 evalConjQuer (ExpAnd cq1 (ExpEq s1 s2)) = do 
                                              cq1result <- evalConjQuer cq1
                                              let result = evalEq s1 s2 cq1result
-                                             return result;    
+                                             return result;   
+
+evalConjQuer (ExpEq s1 s2) = error ("Symbol " ++ s1 ++ ", " ++ s2 ++ " not found in the scope.")
 
 evalConjQuer (ExpAnd cq1 cq2) = do 
-                                   
                                    cq1result <- evalConjQuer cq1
                                    cq2result <- evalConjQuer cq2
                                    let result = evalAnd cq1result cq2result
                                    return result;
+
+evalConjQuer (ExpExists s cq) = evalConjQuer cq
 
 -- this case seems impossible, cause the ExpEq should always follow some other expressions to make sense. 
 -- evalConjQuer (ExpAnd (ExpEq s1 s2) cq2) = do
