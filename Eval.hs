@@ -49,6 +49,33 @@ evalConjQuer (ExpRelation r vl) = do
                                     let a = evalVarList vl
                                     let result = ((relation csvData a),[])
                                     return result;
+
+-- one of smallest fragments
+-- this is useless. ExpEq without previous cq is useless.
+-- evalConjQuer (ExpExists s (ExpEq s1 s2)) = ?
+
+-- this one makes sense
+evalConjQuer (ExpAnd cq1 (ExpExists s (ExpEq s1 s2))) = do 
+                                                            cq1Result <- evalConjQuer cq1
+                                                            let oldBoundVarList = snd cq1Result
+                                                            let newBoundVarList = s: oldBoundVarList
+                                                            let eqResult = evalEq s1 s2 (fst cq1Result)
+                                                            let result = (eqResult, newBoundVarList)
+                                                            return result; 
+
+evalConjQuer (ExpAnd (ExpExists s cq1) cq2) = do 
+                                                cq1Result <- evalConjQuer (ExpExists s cq1)
+                                                cq2Result <- evalConjQuer cq2
+                                                let boundVarList = snd cq1Result ++ snd cq2Result
+                                                let result = (evalAnd (fst cq1Result) (fst cq2Result), boundVarList)
+                                                return result;
+
+evalConjQuer (ExpAnd cq1 (ExpExists s cq2)) = do 
+                                                cq1Result <- evalConjQuer cq1
+                                                cq2Result <- evalConjQuer (ExpExists s cq2)
+                                                let boundVarList = snd cq1Result ++ snd cq2Result
+                                                let result = (evalAnd (fst cq1Result) (fst cq2Result), boundVarList)
+                                                return result;                                    
 evalConjQuer (ExpAnd cq1 (ExpEq s1 s2)) = do 
                                              cq1Result <- evalConjQuer cq1
                                              let result = (evalEq s1 s2 (fst cq1Result), snd cq1Result)
@@ -73,18 +100,7 @@ evalConjQuer (ExpExists s (ExpRelation r vl)) = do
                                                     let newBoundVarList = s:oldBoundVarList
                                                     return (fst relationResult, newBoundVarList);
 
--- one of smallest fragments
--- this is useless. ExpEq without previous cq is useless.
--- evalConjQuer (ExpExists s (ExpEq s1 s2)) = ?
 
--- this one makes sense
-evalConjQuer (ExpAnd cq1 (ExpExists s (ExpEq s1 s2))) = do 
-                                                            cq1Result <- evalConjQuer cq1
-                                                            let oldBoundVarList = snd cq1Result
-                                                            let newBoundVarList = s: oldBoundVarList
-                                                            let eqResult = evalEq s1 s2 (fst cq1Result)
-                                                            let result = (eqResult, newBoundVarList)
-                                                            return result; 
 evalConjQuer (ExpExists s (ExpExists s2 cq)) = do 
                                                   subResult <- evalConjQuer (ExpExists s2 cq)
                                                   let oldBoundVarList = snd subResult
@@ -99,19 +115,7 @@ evalConjQuer (ExpExists s (ExpAnd cq1 cq2)) = do
                                                 let result = ((fst andResult), newBoundVarList)
                                                 return result;
 
-evalConjQuer (ExpAnd (ExpExists s cq1) cq2) = do 
-                                                cq1Result <- evalConjQuer (ExpExists s cq1)
-                                                cq2Result <- evalConjQuer cq2
-                                                let boundVarList = snd cq1Result ++ snd cq2Result
-                                                let result = (evalAnd (fst cq1Result) (fst cq2Result), boundVarList)
-                                                return result;
 
-evalConjQuer (ExpAnd cq1 (ExpExists s cq2)) = do 
-                                                cq1Result <- evalConjQuer cq1
-                                                cq2Result <- evalConjQuer (ExpExists s cq2)
-                                                let boundVarList = snd cq1Result ++ snd cq2Result
-                                                let result = (evalAnd (fst cq1Result) (fst cq2Result), boundVarList)
-                                                return result;
 
 
 
