@@ -3,7 +3,7 @@ module CsvReader where
 import Data.Char
 import Data.Text
 
-type CsvData = [[String]]
+type CsvData = IO [[String]]
 
 -- task4
 -- TO-DO: need to handel empty entry
