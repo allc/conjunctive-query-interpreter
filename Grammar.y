@@ -30,7 +30,7 @@ ConjQuer : ConjQuer '^' ConjQuer           { ExpAnd $1 $3 }
 
 {
 parseError :: [Token] -> a
-parseError t = error "error"
+parseError t = error ("Parsing error at " ++ (tokenMessage (head t)))
 data Exp = ExpJudgement VarList ConjQuer
          deriving Show
 data VarList = ExpVar String
@@ -41,4 +41,10 @@ data ConjQuer = ExpAnd ConjQuer ConjQuer
               | ExpRelation String VarList
               | ExpExists String ConjQuer
               deriving Show
+
+tokenMessage :: Token -> String
+tokenMessage t = "line " ++ (show $ lineNum $ tokenPn) ++ " column " ++ (show $colNum $ tokenPn) ++ " " ++ tokenStr
+  where
+    tokenPn = tokenPosn t
+    tokenStr = tokenString t
 }
