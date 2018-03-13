@@ -7,15 +7,15 @@ import Token
 %tokentype { Token }
 %error { parseError }
 %token
-  select { TokenSelect }
-  where  { TokenWhere }
-  '^'    { TokenAnd }
-  '='    { TokenEq }
-  '('    { TokenLParen }
-  ')'    { TokenRParen }
-  exists { TokenExists }
-  '.'    { TokenDot }
-  varRelation { TokenVarRelation $$ }
+  select { TokenSelect _ }
+  where  { TokenWhere _ }
+  '^'    { TokenAnd _ }
+  '='    { TokenEq _ }
+  '('    { TokenLParen _ }
+  ')'    { TokenRParen _ }
+  exists { TokenExists _ }
+  '.'    { TokenDot _ }
+  varRelation { TokenVarRelation _ $$ }
 
 %left '^'
 %right '.'
