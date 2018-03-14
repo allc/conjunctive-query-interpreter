@@ -14,3 +14,11 @@ make clean
 ```
 ./myinterpreter program_filename
 ```
+
+## Imported Packages
+- System.Environment
+- Data.List
+- Control.Monad
+- Data.Text *
+
+(*) package not in the default installation

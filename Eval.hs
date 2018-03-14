@@ -139,7 +139,7 @@ evalConjQuer (ExpExists s (ExpAnd cq1 cq2)) = do
                                                 let result = ((fst andResult), newBoundVarList)
                                                 return result;
 
-
+evalConjQuer (ExpExists _ (ExpEq s1 s2)) = error ("Symbol " ++ s1 ++ ", " ++ s2 ++ " not found in scope.")
 
 
 
@@ -156,7 +156,7 @@ evalEq :: Var -> Var -> [[(String, String)]] -> [[(String, String)]]
 evalEq s1 s2 b = [x| tuple <- b, s1val<-[(findVar s1 tuple)], s1val/=Nothing, s2val<-[(findVar s2 tuple)], s2val/=Nothing, s1val == s2val, x<-[tuple]]
                                    
 
-                                      
+
 
 
 -- | Evaluation helper functions
@@ -166,7 +166,7 @@ relation (d:ds) vl = relationALine d vl : relation ds vl
 
 relationALine :: [String] -> [Var] -> [(Var, String)]
 relationALine _ [] = []
-relationALine [] (v:vs) = (v, "") : relationALine [] vs
+relationALine [] _ = error ("Bad CSV input, columns do not correspond to the relation")
 relationALine (s:ss) (v:vs) = (v, s) : relationALine ss vs
 
 -- evalAnd :: ConjResult -> ConjResult -> ConjResult
