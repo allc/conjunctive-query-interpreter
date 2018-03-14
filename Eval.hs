@@ -21,9 +21,14 @@ evalVarList (ExpVarList v vl) = v : (evalVarList vl)
 
 -- -- Check all variables are declared either in Existential quantitifer or in the free variable list. 
 -- -- need modified, not the final result. 
-checkAllVariableDeclared varsUsed freeAndBoundVars = and[boolResult| var <- varsUsed ,boolResult <- [isVarDeclared var freeAndBoundVars]]
 
+checkAllVariableDeclared :: [Var] -> [Var] -> Bool
+checkAllVariableDeclared [] freeAndBoundVars = True
+checkAllVariableDeclared varsUsed@(v:vs) freeAndBoundVars | not(isVarDeclared v freeAndBoundVars) = error ("Variable " ++ v ++ " is not declared")
+                                                          | otherwise = checkAllVariableDeclared vs freeAndBoundVars
+isVarDeclared :: Var -> [Var] -> Bool                                            
 isVarDeclared var freeAndBoundVars = or[boolResult| variable <- freeAndBoundVars, boolResult <- [var == variable]] 
+
 
 -- judge method : print the results.
 -- judge :: [Var] -> ConjResult -> Judgement
@@ -41,6 +46,8 @@ judge vl cq = do
                 print freeAndBoundVars
                 let allDeclared = checkAllVariableDeclared varsUsed freeAndBoundVars
                 print allDeclared
+                
+                
                 let result = judge' vl (fst cqResults)
                 -- let result = fst cqResults
                 return boundVars;  
