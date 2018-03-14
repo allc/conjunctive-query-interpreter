@@ -1,6 +1,5 @@
 module CsvReader where
 
-import Data.Char
 import Data.Text
 
 type CsvData = IO [[String]]
