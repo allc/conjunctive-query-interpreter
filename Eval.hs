@@ -18,6 +18,10 @@ eval (ExpJudgement vs cq) = judge (evalVarList vs) (evalConjQuer cq)
 evalVarList :: VarList -> [Var]
 evalVarList (ExpVar v) = [v]
 evalVarList (ExpVarList v vl) = v : (evalVarList vl)
+evalVarList (ExpVarSkip 0) = []
+evalVarList (ExpVarSkip _) = ["_"]
+evalVarList (ExpVarSkipList 0 vl) = evalVarList vl
+evalVarList (ExpVarSkipList s vl) = "_" : evalVarList (ExpVarSkipList (s - 1) vl)
 
 -- -- Check all variables are declared either in Existential quantitifer or in the free variable list. 
 -- -- need modified, not the final result. 
@@ -214,7 +218,8 @@ checkRelationALine (b:bs) | snd var == Nothing = checkRelationALine bs
 relationALine :: [String] -> [Var] -> [(Var, String)]
 relationALine _ [] = []
 relationALine [] _ = error ("Bad CSV input, columns do not correspond to the relation.")
-relationALine (s:ss) (v:vs) = (v, s) : relationALine ss vs
+relationALine (s:ss) (v:vs) | v /= "_" = (v, s) : relationALine ss vs
+                            | otherwise = relationALine ss vs
 
 -- evalAnd :: ConjResult -> ConjResult -> ConjResult
 evalAnd [] _ = []
