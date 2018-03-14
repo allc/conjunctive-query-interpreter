@@ -39,11 +39,11 @@ judge' vl (c:cs) = judgeALine vl c : judge' vl cs
 judge vl cq = do 
                 cqResults <- cq
                 let varsUsed = getAllVarFromBinding (fst cqResults)
-                print varsUsed
+                -- print varsUsed
                 let boundVars = snd cqResults
-                print boundVars
+                -- print boundVars
                 let freeAndBoundVars = boundVars ++ vl
-                print freeAndBoundVars
+                -- print freeAndBoundVars
                 let allDeclared = checkAllVariableDeclared varsUsed freeAndBoundVars
                 -- print allDeclared
                 
@@ -85,7 +85,7 @@ evalConjQuer (ExpRelation r vl) = do
 
 -- Design decision: we evaluate the statement from left to right, and Eq uses the result of previous query result. 
 -- Thus, it cannot be in the first element of the And operator.
-evalConjQuer (ExpAnd (ExpEq s1 s2) _ ) = error "Write error here"
+evalConjQuer (ExpAnd (ExpEq s1 s2) _ ) = error "No query result for the Eq operation to be applied on"
 
 -- evalConjQuer (ExpAnd (ExpExists s (ExpEq s1 s2)) _ ) = error "Write error here"
 
@@ -103,10 +103,10 @@ evalConjQuer (ExpAnd (ExpEq s1 s2) _ ) = error "Write error here"
 --                                                                         return result;
 
 evalConjQuer (ExpAnd (ExpExists s cq1) cq2) = do 
-                                                print "take one shell down 1"
+                                                -- print "take one shell down 1"
                                                 subResult <- evalConjQuer (ExpAnd cq1 cq2)
                                                 let oldBoundVarList = snd subResult
-                                                print "what's going on"
+                                                -- print "what's going on"
 
                                                 let newList = s: oldBoundVarList 
                                                 
@@ -114,7 +114,7 @@ evalConjQuer (ExpAnd (ExpExists s cq1) cq2) = do
                                                 return result;
 
 evalConjQuer (ExpAnd cq1 (ExpExists s cq2)) = do 
-                                                print "take one shell down 2"
+                                                -- print "take one shell down 2"
                                                 subResult <- evalConjQuer (ExpAnd cq1 cq2)
                                                 let oldBoundVarList = snd subResult
                                                 let newBoundVarlist = s: oldBoundVarList
@@ -139,7 +139,7 @@ evalConjQuer (ExpAnd cq1 (ExpEq s1 s2)) = do
                                                 
 
 evalConjQuer (ExpAnd cq1 cq2) = do 
-                                   print "match the end"
+                                  --  print "match the end"
                                    cq1Result <- evalConjQuer cq1
 
                                    cq2Result <- evalConjQuer cq2
