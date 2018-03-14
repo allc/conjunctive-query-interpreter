@@ -47,10 +47,11 @@ judge vl cq = do
                 let allDeclared = checkAllVariableDeclared varsUsed freeAndBoundVars
                 -- print allDeclared
                 
-                
+
                 let result = judge' vl (fst cqResults)
                 -- let result = fst cqResults
-                return result;  
+                case allDeclared of 
+                  True -> return result
 
 judgeALine :: [Var] -> [(Var, String)] -> [String]
 judgeALine [] _ = []
