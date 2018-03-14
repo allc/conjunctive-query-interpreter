@@ -21,7 +21,9 @@ evalVarList (ExpVarList v vl) = v : (evalVarList vl)
 
 -- -- Check all variables are declared either in Existential quantitifer or in the free variable list. 
 -- -- need modified, not the final result. 
--- isVarDeclared var freeAndBoundVars = and[boolResult| variable <- freeAndBoundVars, boolResult <- [var == variable]] 
+checkAllVariableDeclared varsUsed freeAndBoundVars = and[boolResult| var <- varsUsed ,boolResult <- [isVarDeclared var freeAndBoundVars]]
+
+isVarDeclared var freeAndBoundVars = or[boolResult| variable <- freeAndBoundVars, boolResult <- [var == variable]] 
 
 -- judge method : print the results.
 -- judge :: [Var] -> ConjResult -> Judgement
@@ -32,7 +34,13 @@ judge' vl (c:cs) = judgeALine vl c : judge' vl cs
 judge vl cq = do 
                 cqResults <- cq
                 let varsUsed = getAllVarFromBinding (fst cqResults)
+                print varsUsed
                 let boundVars = snd cqResults
+                print boundVars
+                let freeAndBoundVars = boundVars ++ vl
+                print freeAndBoundVars
+                let allDeclared = checkAllVariableDeclared varsUsed freeAndBoundVars
+                print allDeclared
                 let result = judge' vl (fst cqResults)
                 -- let result = fst cqResults
                 return boundVars;  
@@ -49,6 +57,7 @@ findVar :: Var -> [(Var, String)] -> Maybe String
 findVar _ [] = Nothing
 findVar v (l:ls) | v == fst l = Just (snd l)
                  | otherwise = findVar v ls
+
 
 -- | Evaluation Conjective Query
 evalConjQuer :: ConjQuer -> ConjResult
