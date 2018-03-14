@@ -5,9 +5,23 @@ import Grammar
 import Eval
 
 import System.Environment
+import Data.List
+import Control.Monad
 
 main = do
     args <- getArgs
     prog <- readFile (head args)
-    result <- eval $ parse $ alexScanTokens prog
-    print (result)
+    result <- sortOnM $ eval $ parse $ alexScanTokens prog
+    putStrLn (formatOut result)
+
+sortOnM :: (Monad m, Ord a) => m [a] -> m [a]
+sortOnM l = liftM sort l
+
+formatOut :: [[String]] -> String
+formatOut [] = []
+formatOut (l:ls) = formatALine l ++ "\n" ++ formatOut ls
+
+formatALine :: [String] -> String
+formatALine [] = []
+formatALine (s:[]) = s
+formatALine (s:ss) = s ++ "," ++ formatALine ss
