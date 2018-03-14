@@ -39,11 +39,11 @@ judge' vl (c:cs) = judgeALine vl c : judge' vl cs
 judge vl cq = do 
                 cqResults <- cq
                 let varsUsed = getAllVarFromBinding (fst cqResults)
-                -- print varsUsed
+                print varsUsed
                 let boundVars = snd cqResults
-                -- print boundVars
+                print boundVars
                 let freeAndBoundVars = boundVars ++ vl
-                -- print freeAndBoundVars
+                print freeAndBoundVars
                 let allDeclared = checkAllVariableDeclared varsUsed freeAndBoundVars
                 -- print allDeclared
                 
@@ -57,7 +57,7 @@ judgeALine [] _ = []
 judgeALine (v:vs) b = getVar (findVar v b) : judgeALine vs b
 
 getVar :: (String, Maybe String) -> String
-getVar (v, Nothing) = error ("Free variable " ++ v ++ " found.")
+getVar (v, Nothing) = error ("Free variable " ++ v ++ " not found.")
 getVar (v, (Just s)) = s
 
 findVar :: Var -> [(Var, String)] -> (String, Maybe String)
@@ -79,49 +79,88 @@ evalConjQuer (ExpRelation r vl) = do
 -- evalConjQuer (ExpExists s (ExpEq s1 s2)) = ?
 
 -- this one makes sense
-evalConjQuer (ExpAnd cq1 (ExpExists s (ExpEq s1 s2))) = do 
-                                                            cq1Result <- evalConjQuer cq1
-                                                            let oldBoundVarList = snd cq1Result
-                                                            let newBoundVarList = s: oldBoundVarList
-                                                            let eqResult = evalEq s1 s2 (fst cq1Result)
-                                                            let result = (eqResult, newBoundVarList)
-                                                            return result; 
+
+-- | And queries: 
+
+-- Design decision: we evaluate the statement from left to right, and Eq uses the result of previous query result. 
+-- Thus, it cannot be in the first element of the And operator.
+evalConjQuer (ExpAnd (ExpEq s1 s2) _ ) = error "Write error here"
+
+-- evalConjQuer (ExpAnd (ExpExists s (ExpEq s1 s2)) _ ) = error "Write error here"
+
+-- evalConjQuer (ExpAnd (ExpExists s cq1) (ExpEq s1 s2)) = do 
+--                                                             cq1Result <- evalConjQuer (ExpExists s cq1)
+--                                                             let result = (evalEq s1 s2 (fst cq1Result), snd cq1Result)
+--                                                             return result;
+
+-- evalConjQuer (ExpAnd (ExpExists s cq1) (ExpExists s' (ExpEq s1 s2))) = do
+--                                                                         cq1Result <- evalConjQuer (ExpExists s cq1)
+--                                                                         let oldBoundVarList = snd cq1Result
+--                                                                         let newBoundVarList = s': oldBoundVarList
+--                                                                         let eqResult = evalEq s1 s2 (fst cq1Result)
+--                                                                         let result = (eqResult,newBoundVarList)
+--                                                                         return result;
 
 evalConjQuer (ExpAnd (ExpExists s cq1) cq2) = do 
-                                                cq1Result <- evalConjQuer (ExpExists s cq1)
-                                                -- print "test1"
-                                                -- print cq1Result
-                                                cq2Result <- evalConjQuer cq2
-                                                -- print "test2"
-                                                -- print cq2Result
-                                                let boundVarList = snd cq1Result ++ snd cq2Result
-                                                let result = (evalAnd (fst cq1Result) (fst cq2Result), boundVarList)
+                                                print "take one shell down 1"
+                                                subResult <- evalConjQuer (ExpAnd cq1 cq2)
+                                                let oldBoundVarList = snd subResult
+                                                print "what's going on"
+
+                                                let newList = s: oldBoundVarList 
+                                                
+                                                let result = ((fst subResult),newList)
                                                 return result;
 
 evalConjQuer (ExpAnd cq1 (ExpExists s cq2)) = do 
-                                                cq1Result <- evalConjQuer cq1
-                                                cq2Result <- evalConjQuer (ExpExists s cq2)
-                                                let boundVarList = snd cq1Result ++ snd cq2Result
-                                                let result = (evalAnd (fst cq1Result) (fst cq2Result), boundVarList)
+                                                print "take one shell down 2"
+                                                subResult <- evalConjQuer (ExpAnd cq1 cq2)
+                                                let oldBoundVarList = snd subResult
+                                                let newBoundVarlist = s: oldBoundVarList
+                                                let result = ((fst subResult),newBoundVarlist)
+                                                -- let boundVarList = snd cq1Result ++ snd cq2Result
+                                                -- let result = (evalAnd (fst cq1Result) (fst cq2Result), boundVarList)
                                                 return result;                                    
+
 evalConjQuer (ExpAnd cq1 (ExpEq s1 s2)) = do 
                                              cq1Result <- evalConjQuer cq1
                                              let result = (evalEq s1 s2 (fst cq1Result), snd cq1Result)
-                                             return result;   
+                                             return result;                   
 
+-- evalConjQuer (ExpAnd cq1 (ExpExists s (ExpEq s1 s2))) = do 
+--                                                             cq1Result <- evalConjQuer cq1
+--                                                             let oldBoundVarList = snd cq1Result
+--                                                             let newBoundVarList = s: oldBoundVarList
+--                                                             let eqResult = evalEq s1 s2 (fst cq1Result)
+--                                                             let result = (eqResult, newBoundVarList)
+--                                                             return result; 
 
-evalConjQuer (ExpEq s1 s2) = error ("Symbol " ++ s1 ++ ", " ++ s2 ++ " not found in the scope.")
+                                                
 
 evalConjQuer (ExpAnd cq1 cq2) = do 
+                                   print "match the end"
                                    cq1Result <- evalConjQuer cq1
+
                                    cq2Result <- evalConjQuer cq2
+
                                    let boundVarList = snd cq1Result ++ snd cq2Result
+
                                    let result = (evalAnd (fst cq1Result) (fst cq2Result), boundVarList)
+
                                    return result;
+
 
 -- evalConjQuer (ExpExists s cq) = evalConjQuer cq
 
 -- the other smallest fragements
+evalConjQuer (ExpExists s (ExpAnd cq1 cq2)) = do 
+                                                andResult <- evalConjQuer (ExpAnd cq1 cq2)
+                                                let oldBoundVarList = snd andResult
+                                                let newBoundVarList = s: oldBoundVarList
+                                                let result = ((fst andResult), newBoundVarList)
+                                                
+                                                return result;
+
 evalConjQuer (ExpExists s (ExpRelation r vl)) = do 
                                                     relationResult <- evalConjQuer (ExpRelation r vl)
                                                     let oldBoundVarList = snd relationResult
@@ -136,15 +175,11 @@ evalConjQuer (ExpExists s (ExpExists s2 cq)) = do
                                                   let result = ((fst subResult), newBoundVarList)
                                                   return result;
 
-evalConjQuer (ExpExists s (ExpAnd cq1 cq2)) = do 
-                                                andResult <- evalConjQuer (ExpAnd cq1 cq2)
-                                                let oldBoundVarList = snd andResult
-                                                let newBoundVarList = s: oldBoundVarList
-                                                let result = ((fst andResult), newBoundVarList)
-                                                return result;
+
 
 evalConjQuer (ExpExists _ (ExpEq s1 s2)) = error ("Symbol " ++ s1 ++ ", " ++ s2 ++ " not found in scope.")
 
+evalConjQuer (ExpEq s1 s2) = error ("Symbol " ++ s1 ++ ", " ++ s2 ++ " not found in the scope.")
 
 
 
