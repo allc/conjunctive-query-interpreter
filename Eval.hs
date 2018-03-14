@@ -57,7 +57,7 @@ judgeALine [] _ = []
 judgeALine (v:vs) b = getVar (findVar v b) : judgeALine vs b
 
 getVar :: Maybe String -> String
-getVar Nothing = error "Free variable found"
+getVar Nothing = error "Free variable found."
 getVar (Just s) = s
 
 findVar :: Var -> [(Var, String)] -> Maybe String
@@ -166,11 +166,22 @@ evalEq s1 s2 b = [x| tuple <- b, s1val<-[(findVar s1 tuple)], s1val/=Nothing, s2
 -- | Evaluation helper functions
 relation :: [[String]] -> [Var] -> [[(Var, String)]]
 relation [] _ = []
-relation (d:ds) vl = relationALine d vl : relation ds vl
+relation (d:ds) vl | checkRelationALine rl = rl : relation ds vl
+                   | otherwise = relation ds vl
+                   where 
+                    rl = relationALine d vl
+
+checkRelationALine :: [(Var, String)] -> Bool
+checkRelationALine [] = True
+checkRelationALine (b:bs) | var == Nothing = checkRelationALine bs
+                          | getVar var == snd b = checkRelationALine bs
+                          | otherwise = False
+                          where
+                            var = findVar (fst b) bs
 
 relationALine :: [String] -> [Var] -> [(Var, String)]
 relationALine _ [] = []
-relationALine [] _ = error ("Bad CSV input, columns do not correspond to the relation")
+relationALine [] _ = error ("Bad CSV input, columns do not correspond to the relation.")
 relationALine (s:ss) (v:vs) = (v, s) : relationALine ss vs
 
 -- evalAnd :: ConjResult -> ConjResult -> ConjResult
