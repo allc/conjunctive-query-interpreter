@@ -12,8 +12,8 @@ type ConjResult = IO ([[(Var, String)]],BoundVar)
 -- test case
 -- *Eval> eval (ExpJudgement (ExpVarList "x1" (ExpVar "x2")) (ExpRelation "sample" (ExpVarList "x1" (ExpVar "x2"))))
 
--- eval :: Exp -> Judgement
--- eval (ExpJudgement vs cq) = judge (evalVarList vs) (evalConjQuer cq)
+eval :: Exp -> Judgement
+eval (ExpJudgement vs cq) = judge (evalVarList vs) (evalConjQuer cq)
 
 evalVarList :: VarList -> [Var]
 evalVarList (ExpVar v) = [v]
@@ -50,7 +50,7 @@ judge vl cq = do
                 
                 let result = judge' vl (fst cqResults)
                 -- let result = fst cqResults
-                return boundVars;  
+                return result;  
 
 judgeALine :: [Var] -> [(Var, String)] -> [String]
 judgeALine [] _ = []
@@ -89,7 +89,11 @@ evalConjQuer (ExpAnd cq1 (ExpExists s (ExpEq s1 s2))) = do
 
 evalConjQuer (ExpAnd (ExpExists s cq1) cq2) = do 
                                                 cq1Result <- evalConjQuer (ExpExists s cq1)
+                                                print "test1"
+                                                print cq1Result
                                                 cq2Result <- evalConjQuer cq2
+                                                print "test2"
+                                                print cq2Result
                                                 let boundVarList = snd cq1Result ++ snd cq2Result
                                                 let result = (evalAnd (fst cq1Result) (fst cq2Result), boundVarList)
                                                 return result;
