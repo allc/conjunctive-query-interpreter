@@ -39,13 +39,13 @@ judge' vl (c:cs) = judgeALine vl c : judge' vl cs
 judge vl cq = do 
                 cqResults <- cq
                 let varsUsed = getAllVarFromBinding (fst cqResults)
-                print varsUsed
+                -- print varsUsed
                 let boundVars = snd cqResults
-                print boundVars
+                -- print boundVars
                 let freeAndBoundVars = boundVars ++ vl
-                print freeAndBoundVars
+                -- print freeAndBoundVars
                 let allDeclared = checkAllVariableDeclared varsUsed freeAndBoundVars
-                print allDeclared
+                -- print allDeclared
                 
                 
                 let result = judge' vl (fst cqResults)
@@ -89,11 +89,11 @@ evalConjQuer (ExpAnd cq1 (ExpExists s (ExpEq s1 s2))) = do
 
 evalConjQuer (ExpAnd (ExpExists s cq1) cq2) = do 
                                                 cq1Result <- evalConjQuer (ExpExists s cq1)
-                                                print "test1"
-                                                print cq1Result
+                                                -- print "test1"
+                                                -- print cq1Result
                                                 cq2Result <- evalConjQuer cq2
-                                                print "test2"
-                                                print cq2Result
+                                                -- print "test2"
+                                                -- print cq2Result
                                                 let boundVarList = snd cq1Result ++ snd cq2Result
                                                 let result = (evalAnd (fst cq1Result) (fst cq2Result), boundVarList)
                                                 return result;
@@ -157,11 +157,7 @@ evalConjQuer (ExpExists _ (ExpEq s1 s2)) = error ("Symbol " ++ s1 ++ ", " ++ s2 
 -- (ExpVarList "x3" (ExpVar "x4")))) (ExpEq "x2" "x3")))
 
 evalEq :: Var -> Var -> [[(Var, String)]] -> [[(Var, String)]]                                             
-evalEq s1 s2 b = [x| tuple <- b, s1val<-[(findVar s1 tuple)], s1val/=Nothing, s2val<-[(findVar s2 tuple)], s2val/=Nothing, s1val == s2val, x<-[tuple]]
-                                   
-
-
-
+evalEq s1 s2 b = [ tuple | tuple <- b, getVar (findVar s1 tuple) == getVar (findVar s2 tuple)]                    
 
 -- | Evaluation helper functions
 relation :: [[String]] -> [Var] -> [[(Var, String)]]
