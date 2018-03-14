@@ -19,6 +19,10 @@ evalVarList :: VarList -> [Var]
 evalVarList (ExpVar v) = [v]
 evalVarList (ExpVarList v vl) = v : (evalVarList vl)
 
+-- Check all variables are declared either in Existential quantitifer or in the free variable list. 
+-- need modified, not the final result. 
+isVarDeclared usedVars freeAndBoundVars = and[boolResult| checking <- usedVars, variable <- freeAndBoundVars, boolResult <- [usedVars == variable]] 
+
 -- judge method : print the results.
 -- judge :: [Var] -> ConjResult -> Judgement
 judge' _ [] = []
@@ -26,6 +30,8 @@ judge' vl (c:cs) = judgeALine vl c : judge' vl cs
 
 judge vl cq = do 
                 cqResults <- cq
+                let varsUsed = getAllVarFromBinding (fst cqResults)
+
                 let result = judge' vl (fst cqResults)
                 return result;  
 
@@ -168,4 +174,31 @@ evalAndCheck' bind@(v, s) b | findVar v b == Nothing = True
 
 -- eval (ExpJudgement (ExpVarList "x1" (ExpVarList "x3" (ExpVarList "x2" (ExpVar "x4")))) (ExpAnd (ExpAnd (ExpRelation "B" (ExpVarList "x1" (ExpVar "x2")))(ExpRelation "A" (ExpVarList "x1" (ExpVar "x2")))) (ExpRelation "B" (ExpVarList "x3" (ExpVar "x4")))))
 
+-- rename the redundant variable in nested exist statements
+
+tryRename var binding boundVarList | checkUsedVarName var binding = ((renameBinding var newName binding), (renameBoundVarList var newName boundVarList))
+                                   | otherwise = (binding, boundVarList)
+                                      where newName = getANewVarName var binding
+
+
+-- rename the bound variable list
+renameBoundVarList oldName newName [] = []
+renameBoundVarList oldName newName boundVarList@(v:vs) | v == oldName = newName : renameBoundVarList oldName newName vs
+                                                       | otherwise = v: renameBoundVarList oldName newName vs
+
+
+-- rename the bindings    
+renameBinding oldName newName [] = []
+renameBinding oldName newName binding@(b:bs) | (fst b) == oldName = (newName, snd b) : renameBinding oldName newName bs
+                                             | otherwise  = (fst b, snd b): renameBinding oldName newName bs     
+                                   
+-- Warning: potential overhead, repeated bound variables in the list. 
+getANewVarName var binding | checkUsedVarName (var ++ "'") binding  = getANewVarName (var ++ "'") binding
+                           | otherwise = var ++ "'"    
+
+-- return true if there is a varibale with same name, otherwise return false.
+checkUsedVarName var binding = Prelude.length [varName | varName <- getAllVarFromBinding binding ,var == varName] /= 0
+
+getAllVarFromBinding [] = []
+getAllVarFromBinding (b:bs) = (fst b) : getAllVarFromBinding bs
 
