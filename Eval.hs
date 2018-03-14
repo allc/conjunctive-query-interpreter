@@ -156,7 +156,7 @@ evalConjQuer (ExpExists _ (ExpEq s1 s2)) = error ("Symbol " ++ s1 ++ ", " ++ s2 
 -- eval (ExpJudgement (ExpVarList "x1" (ExpVarList "x3" (ExpVarList "x2" (ExpVar "x4")))) (ExpAnd (ExpAnd (ExpRelation "A" (ExpVarList "x1" (ExpVar "x2"))) (ExpRelation "B"
 -- (ExpVarList "x3" (ExpVar "x4")))) (ExpEq "x2" "x3")))
 
-evalEq :: Var -> Var -> [[(String, String)]] -> [[(String, String)]]                                             
+evalEq :: Var -> Var -> [[(Var, String)]] -> [[(Var, String)]]                                             
 evalEq s1 s2 b = [x| tuple <- b, s1val<-[(findVar s1 tuple)], s1val/=Nothing, s2val<-[(findVar s2 tuple)], s2val/=Nothing, s1val == s2val, x<-[tuple]]
                                    
 
@@ -196,7 +196,7 @@ evalAndCheck' bind@(v, s) b | findVar v b == Nothing = True
 
 -- eval (ExpJudgement (ExpVarList "x1" (ExpVarList "x3" (ExpVarList "x2" (ExpVar "x4")))) (ExpAnd (ExpAnd (ExpRelation "B" (ExpVarList "x1" (ExpVar "x2")))(ExpRelation "A" (ExpVarList "x1" (ExpVar "x2")))) (ExpRelation "B" (ExpVarList "x3" (ExpVar "x4")))))
 
--- rename the redundant variable in nested exist statements
+-- rename the redundant variable in nested exist statements if one exists
 
 tryRename :: Var -> [[(Var,String)]] -> [Var] -> ([[(Var,String)]],[Var])
 tryRename var binding boundVarList | checkUsedVarName var binding = ((renameBinding var newName binding), (renameBoundVarList var newName boundVarList))
