@@ -16,7 +16,8 @@ tokens :-
   \(        { tok (\p s -> TokenLParen p) }
   \)        { tok (\p s -> TokenRParen p) }
   exists    { tok (\p s -> TokenExists p) }
-  in        { tok (\p s -> TokenDot p) }
+  in        { tok (\p s -> TokenIn p) }
+  \_ [$digit] [$digit]* { tok (\p s -> TokenVarSkip p (read (tail s) :: Int)) }
   [$alpha $digit] [$alpha $digit \_ \’]* { tok (\p s -> TokenVarRelation p s) }
 
 {
@@ -31,7 +32,8 @@ data Token =
   TokenLParen AlexPosn     |
   TokenRParen AlexPosn     |
   TokenExists AlexPosn     |
-  TokenDot AlexPosn        |
+  TokenIn AlexPosn         |
+  TokenVarSkip AlexPosn Int |
   TokenVarRelation AlexPosn String
   deriving (Eq,Show)
 
@@ -43,7 +45,8 @@ tokenPosn (TokenEq p) = p
 tokenPosn (TokenLParen p) = p
 tokenPosn (TokenRParen p) = p
 tokenPosn (TokenExists p) = p
-tokenPosn (TokenDot p) = p
+tokenPosn (TokenIn p) = p
+tokenPosn (TokenVarSkip p _) = p
 tokenPosn (TokenVarRelation p _) = p
 
 lineNum :: AlexPosn -> Int
@@ -60,6 +63,7 @@ tokenString (TokenEq _) = "\"=\""
 tokenString (TokenLParen _) = "\"(\""
 tokenString (TokenRParen _) = "\")\""
 tokenString (TokenExists _) = "\"exists\""
-tokenString (TokenDot _) = "\"in\""
+tokenString (TokenIn _) = "\"in\""
+tokenString (TokenVarSkip _ s) = "\"_" ++ show s ++ "\""
 tokenString (TokenVarRelation _ s) = "\"" ++ s ++ "\""
 }
