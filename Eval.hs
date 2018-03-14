@@ -141,8 +141,9 @@ relation [] _ = []
 relation (d:ds) vl = relationALine d vl : relation ds vl
 
 relationALine :: [String] -> [Var] -> [(Var, String)]
-relationALine _ [] = []
-relationALine [] (v:vs) = (v, "") : relationALine [] vs
+relationALine [] [] = []
+relationALine _ [] = error ("Bad input, columns do not correspond to the relation")
+relationALine [] _ = error ("Bad input, columns do not correspond to the relation")
 relationALine (s:ss) (v:vs) = (v, s) : relationALine ss vs
 
 -- evalAnd :: ConjResult -> ConjResult -> ConjResult
