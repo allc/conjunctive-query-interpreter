@@ -56,13 +56,13 @@ judgeALine :: [Var] -> [(Var, String)] -> [String]
 judgeALine [] _ = []
 judgeALine (v:vs) b = getVar (findVar v b) : judgeALine vs b
 
-getVar :: Maybe String -> String
-getVar Nothing = error "Free variable found."
-getVar (Just s) = s
+getVar :: (String, Maybe String) -> String
+getVar (v, Nothing) = error ("Free variable " ++ v ++ " found.")
+getVar (v, (Just s)) = s
 
-findVar :: Var -> [(Var, String)] -> Maybe String
-findVar _ [] = Nothing
-findVar v (l:ls) | v == fst l = Just (snd l)
+findVar :: Var -> [(Var, String)] -> (String, Maybe String)
+findVar v [] = (v, Nothing)
+findVar v (l:ls) | v == fst l = (v, Just (snd l))
                  | otherwise = findVar v ls
 
 
@@ -169,7 +169,7 @@ relation (d:ds) vl | checkRelationALine rl = rl : relation ds vl
 
 checkRelationALine :: [(Var, String)] -> Bool
 checkRelationALine [] = True
-checkRelationALine (b:bs) | var == Nothing = checkRelationALine bs
+checkRelationALine (b:bs) | snd var == Nothing = checkRelationALine bs
                           | getVar var == snd b = checkRelationALine bs
                           | otherwise = False
                           where
@@ -198,7 +198,7 @@ evalAndCheck (b1:b1s) b2s = evalAndCheck' b1 b2s && evalAndCheck b1s b2s
 
 evalAndCheck' :: (Var, String) -> [(Var, String)] -> Bool
 evalAndCheck' _ [] = True
-evalAndCheck' bind@(v, s) b | findVar v b == Nothing = True
+evalAndCheck' bind@(v, s) b | snd (findVar v b) == Nothing = True
                             | otherwise = getVar (findVar v b) == s
 
 -- eval (ExpJudgement (ExpVarList "x1" (ExpVarList "x3" (ExpVarList "x2" (ExpVar "x4")))) (ExpAnd (ExpAnd (ExpRelation "B" (ExpVarList "x1" (ExpVar "x2")))(ExpRelation "A" (ExpVarList "x1" (ExpVar "x2")))) (ExpRelation "B" (ExpVarList "x3" (ExpVar "x4")))))
