@@ -31,11 +31,11 @@ judge' vl (c:cs) = judgeALine vl c : judge' vl cs
 
 judge vl cq = do 
                 cqResults <- cq
-                -- let varsUsed = getAllVarFromBinding (fst cqResults)
-
+                let varsUsed = getAllVarFromBinding (fst cqResults)
+                let boundVars = snd cqResults
                 let result = judge' vl (fst cqResults)
                 -- let result = fst cqResults
-                return result;  
+                return boundVars;  
 
 judgeALine :: [Var] -> [(Var, String)] -> [String]
 judgeALine [] _ = []
@@ -178,10 +178,10 @@ evalAndCheck' bind@(v, s) b | findVar v b == Nothing = True
 
 -- rename the redundant variable in nested exist statements
 
--- tryRename :: Var -> [[(Var,String)]] -> [Var]
--- tryRename var binding boundVarList | checkUsedVarName var binding = ((renameBinding var newName binding), (renameBoundVarList var newName boundVarList))
---                                    | otherwise = (binding, boundVarList)
---                                       where newName = getANewVarName var binding
+tryRename :: Var -> [[(Var,String)]] -> [Var] -> ([[(Var,String)]],[Var])
+tryRename var binding boundVarList | checkUsedVarName var binding = ((renameBinding var newName binding), (renameBoundVarList var newName boundVarList))
+                                   | otherwise = (binding, boundVarList)
+                                      where newName = getANewVarName var binding
 
 
 -- rename the bound variable list
@@ -202,11 +202,12 @@ renameABinding oldName newName binding@(b:bs) | (fst b) == oldName = (newName, s
                                               | otherwise  = (fst b, snd b): (renameABinding oldName newName bs)     
                                    
 -- -- Warning: potential overhead, repeated bound variables in the list. 
--- getANewVarName var binding | checkUsedVarName (var ++ "'") binding  = getANewVarName (var ++ "'") binding
---                            | otherwise = var ++ "'"    
+getANewVarName var binding | checkUsedVarName (var ++ "'") binding  = getANewVarName (var ++ "'") binding
+                           | otherwise = var ++ "'"    
 
 -- -- return true if there is a varibale with same name, otherwise return false.
--- checkUsedVarName var binding = Prelude.length [varName | varName <- getAllVarFromBinding binding ,var == varName] /= 0
+checkUsedVarName :: Var -> [[(Var,String)]] -> Bool
+checkUsedVarName var binding = Prelude.length [varName | varName <- getAllVarFromBinding binding ,var == varName] /= 0
 
 getAllVarFromBinding :: [[(Var, String)]] -> [Var]
 getAllVarFromBinding [] = []
