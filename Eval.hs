@@ -115,7 +115,7 @@ evalConjQuer (ExpExists s (ExpAnd cq1 cq2)) = do
                                                 let result = ((fst andResult), newBoundVarList)
                                                 return result;
 
-
+evalConjQuer (ExpExists _ (ExpEq s1 s2)) = error ("Symbol " ++ s1 ++ ", " ++ s2 ++ " not found in scope.")
 
 
 
