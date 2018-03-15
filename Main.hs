@@ -16,10 +16,12 @@ main = do
     run progl
 
 run [] = return Nothing
-run (l:ls) = do
-    result <- sortOnM $ eval $ parse $ alexScanTokens (l)
-    putStrLn (formatOut result)
-    run ls
+run (l:ls) | l /= [] = do
+                result <- sortOnM $ eval $ parse $ alexScanTokens (l)
+                putStrLn (formatOut result)
+                run ls
+           | otherwise = run ls
+
 
 sortOnM :: (Monad m, Ord a) => m [a] -> m [a]
 sortOnM l = liftM sort l
