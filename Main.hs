@@ -15,12 +15,13 @@ main = do
     let progl = splitOn ";" prog
     run progl
 
-run [] = return Nothing
-run (l:ls) | l /= [] = do
+run [] = putStr ""
+run (l:ls) | l /= "\n" && l /= [] = do
                 result <- sortOnM $ eval $ parse $ alexScanTokens (l)
                 putStrLn (formatOut result)
                 run ls
-           | otherwise = run ls
+           | otherwise = do
+                run ls
 
 
 sortOnM :: (Monad m, Ord a) => m [a] -> m [a]
