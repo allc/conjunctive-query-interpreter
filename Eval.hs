@@ -111,17 +111,25 @@ evalConjQuer (ExpAnd (ExpExists s cq1) cq2) = do
                                                 let newList = s: oldBoundVarList 
                                                 
                                                 let result = ((fst subResult),newList)
-                                                return result;
+                                                
+                                                case checkUsedBoundVarName s oldBoundVarList of
+                                                  False -> return result
+                                                
+
 
 evalConjQuer (ExpAnd cq1 (ExpExists s cq2)) = do 
                                                 -- print "take one shell down 2"
                                                 subResult <- evalConjQuer (ExpAnd cq1 cq2)
                                                 let oldBoundVarList = snd subResult
-                                                let newBoundVarlist = s: oldBoundVarList
+                                                let newBoundVarlist = s : oldBoundVarList
                                                 let result = ((fst subResult),newBoundVarlist)
                                                 -- let boundVarList = snd cq1Result ++ snd cq2Result
                                                 -- let result = (evalAnd (fst cq1Result) (fst cq2Result), boundVarList)
-                                                return result;                                    
+                                                case checkUsedBoundVarName s oldBoundVarList of
+                                                  
+                                                  False -> return result
+                                                
+                                                                              
 
 evalConjQuer (ExpAnd cq1 (ExpEq s1 s2)) = do 
                                              cq1Result <- evalConjQuer cq1
@@ -159,8 +167,10 @@ evalConjQuer (ExpExists s (ExpAnd cq1 cq2)) = do
                                                 let oldBoundVarList = snd andResult
                                                 let newBoundVarList = s: oldBoundVarList
                                                 let result = ((fst andResult), newBoundVarList)
+                                                case checkUsedBoundVarName s oldBoundVarList of
+                                            
+                                                  False -> return result
                                                 
-                                                return result;
 
 evalConjQuer (ExpExists s (ExpRelation r vl)) = do 
                                                     relationResult <- evalConjQuer (ExpRelation r vl)
@@ -174,8 +184,10 @@ evalConjQuer (ExpExists s (ExpExists s2 cq)) = do
                                                   let oldBoundVarList = snd subResult
                                                   let newBoundVarList = s : oldBoundVarList
                                                   let result = ((fst subResult), newBoundVarList)
-                                                  return result;
-
+                                                  case checkUsedBoundVarName s oldBoundVarList of
+                                                    
+                                                    False -> return result
+                                                  
 
 
 evalConjQuer (ExpExists _ (ExpEq s1 s2)) = error ("Symbol " ++ s1 ++ ", " ++ s2 ++ " not found in scope.")
@@ -241,36 +253,44 @@ evalAndCheck' bind@(v, s) b | snd (findVar v b) == Nothing = True
 
 -- rename the redundant variable in nested exist statements if one exists
 
-tryRename :: Var -> [[(Var,String)]] -> [Var] -> ([[(Var,String)]],[Var])
-tryRename var binding boundVarList | checkUsedVarName var binding = ((renameBinding var newName binding), (renameBoundVarList var newName boundVarList))
-                                   | otherwise = (binding, boundVarList)
-                                      where newName = getANewVarName var binding
+-- tryRename :: Var -> [[(Var,String)]] -> [Var] -> ([[(Var,String)]],[Var])
+-- tryRename var binding boundVarList | checkUsedVarName var binding = ((renameBinding var newName binding), (renameBoundVarList var newName boundVarList))
+--                                    | otherwise = (binding, boundVarList)
+--                                       where newName = getANewVarName var binding
 
 
 -- rename the bound variable list
-renameBoundVarList :: Var -> Var ->[Var] -> [Var]
-renameBoundVarList oldName newName [] = []
-renameBoundVarList oldName newName boundVarList@(v:vs) | v == oldName = newName : renameBoundVarList oldName newName vs
-                                                       | otherwise = v: (renameBoundVarList oldName newName vs)
+-- renameBoundVarList :: Var -> Var ->[Var] -> [Var]
+-- renameBoundVarList oldName newName [] = []
+-- renameBoundVarList oldName newName boundVarList@(v:vs) | v == oldName = newName : renameBoundVarList oldName newName vs
+--                                                        | otherwise = v: (renameBoundVarList oldName newName vs)
 
 
 -- rename the bindings    
-renameBinding :: Var -> Var -> [[(Var,String)]] -> [[(Var,String)]]
-renameBinding _ _ [] = []
-renameBinding oldName newName bindingList@(bl:bls) = (renameABinding oldName newName bl) : renameBinding oldName newName bls 
+-- renameBinding :: Var -> Var -> [[(Var,String)]] -> [[(Var,String)]]
+-- renameBinding _ _ [] = []
+-- renameBinding oldName newName bindingList@(bl:bls) = (renameABinding oldName newName bl) : renameBinding oldName newName bls 
 
-renameABinding :: Var -> Var -> [(Var,String)] -> [(Var,String)]
-renameABinding oldName newName [] = []
-renameABinding oldName newName binding@(b:bs) | (fst b) == oldName = (newName, snd b) : (renameABinding oldName newName bs)
-                                              | otherwise  = (fst b, snd b): (renameABinding oldName newName bs)     
+-- renameABinding :: Var -> Var -> [(Var,String)] -> [(Var,String)]
+-- renameABinding oldName newName [] = []
+-- renameABinding oldName newName binding@(b:bs) | (fst b) == oldName = (newName, snd b) : (renameABinding oldName newName bs)
+--                                               | otherwise  = (fst b, snd b): (renameABinding oldName newName bs)     
                                    
--- -- Warning: potential overhead, repeated bound variables in the list. 
-getANewVarName var binding | checkUsedVarName (var ++ "'") binding  = getANewVarName (var ++ "'") binding
-                           | otherwise = var ++ "'"    
+-- -- -- Warning: potential overhead, repeated bound variables in the list. 
+-- getANewVarName var binding | checkUsedVarName (var ++ "'") binding  = getANewVarName (var ++ "'") binding
+--                            | otherwise = var ++ "'"    
 
 -- -- return true if there is a varibale with same name, otherwise return false.
 checkUsedVarName :: Var -> [[(Var,String)]] -> Bool
 checkUsedVarName var binding = Prelude.length [varName | varName <- getAllVarFromBinding binding ,var == varName] /= 0
+
+-- return True, if the var is already used, otherwise False
+checkUsedBoundVarName' :: Var -> [Var] -> Bool
+checkUsedBoundVarName' var boundVars = Prelude.length [varName| varName <- boundVars, var == varName] /= 0
+
+checkUsedBoundVarName :: Var -> [Var] -> Bool 
+checkUsedBoundVarName var boundVars | checkUsedBoundVarName' var boundVars = error ("The variable " ++ var ++ " has already been used in the other exist statement. Please rename it")
+                                    | otherwise = False
 
 getAllVarFromBinding :: [[(Var, String)]] -> [Var]
 getAllVarFromBinding [] = []
