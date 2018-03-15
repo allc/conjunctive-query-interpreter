@@ -33,13 +33,24 @@ checkAllVariableDeclared varsUsed@(v:vs) freeAndBoundVars | not(isVarDeclared v 
 isVarDeclared :: Var -> [Var] -> Bool                                            
 isVarDeclared var freeAndBoundVars = or[boolResult| variable <- freeAndBoundVars, boolResult <- [var == variable]] 
 
+-- function to check whether free var(s) has the same name as one or more bound variables
+checkFreeBoundVarNames :: [Var] -> [Var] -> Bool
+checkFreeBoundVarNames [] boundVars = True
+checkFreeBoundVarNames freeVars@(f:fs) boundVars | checkFreeBoundVarNames' f boundVars = error ("Variable " ++ f ++ " cannot be declared as both the free variable and the bound variable. Please rename.")
+                                                 | otherwise = checkFreeBoundVarNames fs boundVars
+                                                 
+-- return true if found variables having the same name.
+-- return false if not.                                                 
+checkFreeBoundVarNames' :: Var -> [Var] -> Bool
+checkFreeBoundVarNames' free boundVars = or[boolResult | boundVar <- boundVars, boolResult <- [free == boundVar]]
+
 
 -- judge method : print the results.
--- judge :: [Var] -> ConjResult -> Judgement
 judge' :: [Var] -> [[(Var,String)]] -> [[String]]
 judge' _ [] = []
 judge' vl (c:cs) = judgeALine vl c : judge' vl cs
 
+judge :: [Var] -> ConjResult -> Judgement
 judge vl cq = do 
                 cqResults <- cq
                 let varsUsed = getAllVarFromBinding (fst cqResults)
@@ -50,11 +61,13 @@ judge vl cq = do
                 -- print freeAndBoundVars
                 let allDeclared = checkAllVariableDeclared varsUsed freeAndBoundVars
                 -- print allDeclared
-                
-
+                let freeBoundVarNameOK = checkFreeBoundVarNames vl boundVars
+                -- print vl
+                -- print boundVars
+                let checked = allDeclared && freeBoundVarNameOK 
                 let result = judge' vl (fst cqResults)
                 -- let result = fst cqResults
-                case allDeclared of 
+                case checked of 
                   True -> return result
 
 judgeALine :: [Var] -> [(Var, String)] -> [String]
@@ -79,32 +92,12 @@ evalConjQuer (ExpRelation r vl) = do
                                     let result = ((relation csvData a),[])
                                     return result;
 
--- one of smallest fragments
--- this is useless. ExpEq without previous cq is useless.
--- evalConjQuer (ExpExists s (ExpEq s1 s2)) = ?
-
--- this one makes sense
-
 -- | And queries: 
 
 -- Design decision: we evaluate the statement from left to right, and Eq uses the result of previous query result. 
 -- Thus, it cannot be in the first element of the And operator.
 evalConjQuer (ExpAnd (ExpEq s1 s2) _ ) = error "No query result for the Eq operation to be applied on"
 
--- evalConjQuer (ExpAnd (ExpExists s (ExpEq s1 s2)) _ ) = error "Write error here"
-
--- evalConjQuer (ExpAnd (ExpExists s cq1) (ExpEq s1 s2)) = do 
---                                                             cq1Result <- evalConjQuer (ExpExists s cq1)
---                                                             let result = (evalEq s1 s2 (fst cq1Result), snd cq1Result)
---                                                             return result;
-
--- evalConjQuer (ExpAnd (ExpExists s cq1) (ExpExists s' (ExpEq s1 s2))) = do
---                                                                         cq1Result <- evalConjQuer (ExpExists s cq1)
---                                                                         let oldBoundVarList = snd cq1Result
---                                                                         let newBoundVarList = s': oldBoundVarList
---                                                                         let eqResult = evalEq s1 s2 (fst cq1Result)
---                                                                         let result = (eqResult,newBoundVarList)
---                                                                         return result;
 
 evalConjQuer (ExpAnd (ExpExists s cq1) cq2) = do 
                                                 -- print "take one shell down 1"
@@ -140,13 +133,6 @@ evalConjQuer (ExpAnd cq1 (ExpEq s1 s2)) = do
                                              let result = (evalEq s1 s2 (fst cq1Result), snd cq1Result)
                                              return result;                   
 
--- evalConjQuer (ExpAnd cq1 (ExpExists s (ExpEq s1 s2))) = do 
---                                                             cq1Result <- evalConjQuer cq1
---                                                             let oldBoundVarList = snd cq1Result
---                                                             let newBoundVarList = s: oldBoundVarList
---                                                             let eqResult = evalEq s1 s2 (fst cq1Result)
---                                                             let result = (eqResult, newBoundVarList)
---                                                             return result; 
 
                                                 
 
@@ -162,10 +148,6 @@ evalConjQuer (ExpAnd cq1 cq2) = do
 
                                    return result;
 
-
--- evalConjQuer (ExpExists s cq) = evalConjQuer cq
-
--- the other smallest fragements
 evalConjQuer (ExpExists s (ExpAnd cq1 cq2)) = do 
                                                 andResult <- evalConjQuer (ExpAnd cq1 cq2)
                                                 let oldBoundVarList = snd andResult
@@ -233,12 +215,12 @@ relationALine [] _ = error ("Bad CSV input, columns do not correspond to the rel
 relationALine (s:ss) (v:vs) | v /= "_" = (v, s) : relationALine ss vs
                             | otherwise = relationALine ss vs
 
--- evalAnd :: ConjResult -> ConjResult -> ConjResult
+evalAnd ::[[(Var, String)]] -> [[(Var, String)]] -> [[(Var, String)]]
 evalAnd [] _ = []
 evalAnd (cr1:cr1s) cr2s = evalAnd' cr1 cr2s ++ evalAnd cr1s cr2s
 
 
--- evalAnd' :: [(Var, String)] -> ConjResult -> ConjResult
+evalAnd' :: [(Var, String)] -> [[(Var, String)]] -> [[(Var, String)]]
 evalAnd' _ [] = []
 evalAnd' cr1 (cr2:cr2s) | evalAndCheck cr1 cr2 = newConj : evalAnd' cr1 cr2s
                         | otherwise = evalAnd' cr1 cr2s
@@ -254,38 +236,8 @@ evalAndCheck' _ [] = True
 evalAndCheck' bind@(v, s) b | snd (findVar v b) == Nothing = True
                             | otherwise = getVar (findVar v b) == s
 
--- eval (ExpJudgement (ExpVarList "x1" (ExpVarList "x3" (ExpVarList "x2" (ExpVar "x4")))) (ExpAnd (ExpAnd (ExpRelation "B" (ExpVarList "x1" (ExpVar "x2")))(ExpRelation "A" (ExpVarList "x1" (ExpVar "x2")))) (ExpRelation "B" (ExpVarList "x3" (ExpVar "x4")))))
-
--- rename the redundant variable in nested exist statements if one exists
-
--- tryRename :: Var -> [[(Var,String)]] -> [Var] -> ([[(Var,String)]],[Var])
--- tryRename var binding boundVarList | checkUsedVarName var binding = ((renameBinding var newName binding), (renameBoundVarList var newName boundVarList))
---                                    | otherwise = (binding, boundVarList)
---                                       where newName = getANewVarName var binding
 
 
--- rename the bound variable list
--- renameBoundVarList :: Var -> Var ->[Var] -> [Var]
--- renameBoundVarList oldName newName [] = []
--- renameBoundVarList oldName newName boundVarList@(v:vs) | v == oldName = newName : renameBoundVarList oldName newName vs
---                                                        | otherwise = v: (renameBoundVarList oldName newName vs)
-
-
--- rename the bindings    
--- renameBinding :: Var -> Var -> [[(Var,String)]] -> [[(Var,String)]]
--- renameBinding _ _ [] = []
--- renameBinding oldName newName bindingList@(bl:bls) = (renameABinding oldName newName bl) : renameBinding oldName newName bls 
-
--- renameABinding :: Var -> Var -> [(Var,String)] -> [(Var,String)]
--- renameABinding oldName newName [] = []
--- renameABinding oldName newName binding@(b:bs) | (fst b) == oldName = (newName, snd b) : (renameABinding oldName newName bs)
---                                               | otherwise  = (fst b, snd b): (renameABinding oldName newName bs)     
-                                   
--- -- -- Warning: potential overhead, repeated bound variables in the list. 
--- getANewVarName var binding | checkUsedVarName (var ++ "'") binding  = getANewVarName (var ++ "'") binding
---                            | otherwise = var ++ "'"    
-
--- -- return true if there is a varibale with same name, otherwise return false.
 checkUsedVarName :: Var -> [[(Var,String)]] -> Bool
 checkUsedVarName var binding = Prelude.length [varName | varName <- getAllVarFromBinding binding ,var == varName] /= 0
 
