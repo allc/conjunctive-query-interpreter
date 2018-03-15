@@ -289,7 +289,7 @@ checkUsedBoundVarName' :: Var -> [Var] -> Bool
 checkUsedBoundVarName' var boundVars = Prelude.length [varName| varName <- boundVars, var == varName] /= 0
 
 checkUsedBoundVarName :: Var -> [Var] -> Bool 
-checkUsedBoundVarName var boundVars | checkUsedBoundVarName' var boundVars = error ("The variable " ++ var ++ " has already been used in the other exist statement. Please rename it")
+checkUsedBoundVarName var boundVars | checkUsedBoundVarName' var boundVars = error ("The bound variable " ++ var ++ " has already been used in the other exist statement. Please rename it")
                                     | otherwise = False
 
 getAllVarFromBinding :: [[(Var, String)]] -> [Var]
