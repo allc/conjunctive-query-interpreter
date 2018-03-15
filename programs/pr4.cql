@@ -1,1 +1,1 @@
-select x1 where exists z in R (x1 z)
+select x1 where exists z in R (x1 z);
