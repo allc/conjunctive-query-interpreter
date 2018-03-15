@@ -1,6 +1,6 @@
 module CsvReader where
 
-import Data.Text
+import qualified Data.Text as T
 
 type CsvData = IO [[String]]
 
@@ -21,7 +21,7 @@ readAnEntry (s:ss) | s == ',' = []
 readALine :: String -> Int -> [String]
 readALine ss startIndex | startIndex >= Prelude.length ss = []
                         | otherwise =  stringWithoutSpace : readALine ss (startIndex+(Prelude.length stringWithSpace)+1)
-                            where stringWithoutSpace = unpack $ strip $ pack $ readAnEntry (Prelude.drop startIndex ss)
+                            where stringWithoutSpace = T.unpack $ T.strip $ T.pack $ readAnEntry (Prelude.drop startIndex ss)
                                   stringWithSpace = readAnEntry (Prelude.drop startIndex ss)
                                   
                                   
