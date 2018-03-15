@@ -6,13 +6,20 @@ import Eval
 
 import System.Environment
 import Data.List
+import Data.List.Split
 import Control.Monad
 
 main = do
     args <- getArgs
     prog <- readFile (head args)
-    result <- sortOnM $ eval $ parse $ alexScanTokens prog
+    let progl = splitOn ";" prog
+    run progl
+
+run [] = return Nothing
+run (l:ls) = do
+    result <- sortOnM $ eval $ parse $ alexScanTokens (l)
     putStrLn (formatOut result)
+    run ls
 
 sortOnM :: (Monad m, Ord a) => m [a] -> m [a]
 sortOnM l = liftM sort l
