@@ -20,5 +20,6 @@ make clean
 - Data.List
 - Control.Monad
 - Data.Text *
+- Data.List.Split *
 
 (*) package not in the default installation

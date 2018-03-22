@@ -3,6 +3,7 @@ _build/
 test.txt
 test
 
+programs/prt.cql
 *.csv
 
 myinterpreter
