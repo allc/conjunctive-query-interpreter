@@ -4,7 +4,6 @@ test.txt
 test
 
 programs/prt.cql
-*.csv
 
 myinterpreter
 *.exe
