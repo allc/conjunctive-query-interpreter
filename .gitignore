@@ -7,4 +7,5 @@ programs/prt.cql
 *.csv
 
 myinterpreter
+*.exe
 
