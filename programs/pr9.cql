@@ -1,0 +1,1 @@
+select x1 x2 where exists z1 in exists z2 in A(x1 z1) and B(z1 z2) and C(z2 x2);

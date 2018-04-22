@@ -1,0 +1,1 @@
+select x1 x2 where exists z1 in exists z2 in R(x1 z1) and R(z1 z2) and R(z2 x2);
