@@ -1,8 +1,8 @@
 #!/bin/bash
 
-total = 0;
-pass = 0;
-fail = 0;
+total=0;
+pass=0;
+fail=0;
 echo "--------------------";
 for problem in pr*; do
     for test in $problem/test*/; do
