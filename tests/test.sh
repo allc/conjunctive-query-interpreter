@@ -8,8 +8,8 @@ for problem in pr*; do
     for test in $problem/test*/; do
         cp ../myinterpreter $test;
         cd $test;
-        output=$(./myinterpreter ../../../programs/$problem.cql | sed -E 's/,[[:space:]]+/,/g');
-        expected=$(cat out.csv | sed -E 's/,[[:space:]]+/,/g');
+        output=$(./myinterpreter ../../../programs/$problem.cql | sed -E 's/[[:space:]]*,[[:space:]]*/,/g');
+        expected=$(cat out.csv | sed -E 's/[[:space:]]*,[[:space:]]*/,/g');
         if [ "$output" = "$expected" ]; then
             echo "Test $test passed.";
             echo "Output:"
@@ -27,7 +27,7 @@ for problem in pr*; do
         # clean up
         rm myinterpreter;
         cd ../../;
-        #count
+        # count
         ((total++));
     done
     echo "--------------------";
