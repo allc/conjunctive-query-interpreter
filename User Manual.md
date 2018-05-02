@@ -1,8 +1,56 @@
-# User Manual
+# {{ cql_name }} User Manual
+
+## 1. Introduction
+
+{{ cql_name }} is a conjunctive query language. The language lets you do conjunctive queries with CSV files.
+
+## 2. Get Started
+
+You can do conjunctive queries with CSV files in the current working directory using {{ cql_name }}.
+
+To run your program, simply go to the directory with your CSV files in the terminal and run the interpreter with your program file as the argument, the following is an example:
+
+```bash
+./myinterpreter myquery.cql
+```
+
+The result will be outputted to the terminal.
+
+### My first {{ cql_name }} program
+
+To show the data from the A.csv with the following content:
+
+<table>
+	<tbody>
+		<tr>
+			<td>Hello</td><td>World</td>
+		</tr>
+		<tr>
+			<td>Hi</td><td>{{ cql_name }}</td>
+		</tr>
+	</tbody>
+</table>
+
+Write your program with the following line of code:
+
+```cql
+select x1 x2 from A(x1 x2);
+```
+
+The output is:
+
+```
+Hello,World
+Hi,{{ cql_name }}
+```
+
+## 3. Functionalities
+
+## 4. Features
 
 ## Appendix
 
-### Programs
+### 1. Programs
 
 #### Problem 1 - Conjunction
 ``` cql
@@ -52,4 +100,30 @@ select x1 x2 where exists z1 in exists z2 in A(x1 z1) and B(z1 z2) and C(z2 x2);
 #### Problem 10 - Check for pairs
 ```cql
 select x1 x2 x3 where S(x1 x2 x3) and exists z1 in exists z2 in S(z1 z1 z2) and exists z3 in exists z4 in S(z3 z4 z4);
+```
+
+<hr>
+
+### 2. Language Syntax
+
+```
+             <expr> ::= select <var-list> where <conjunctive-query>
+         <var-list> ::= <var>
+                      | <var-skip>
+                      | <var> <var-list>
+                      | <var-skip> <var-list>
+<conjunctive-query> ::= <conjunctive-query> ^ <conjunctive-query>
+                      | <var> = <var>
+                      | <relation-symbol> ( <var-list> )
+                      | exists <var> in <conjunctive-query>
+              <var> ::= <identifier>
+         <var-skip> ::= _<digits>
+  <relation-symbol> ::= <identifier>
+           <digits> ::= <digit> | <digit><digits>
+            <digit> ::= [0-9]
+       <identifier> ::= <alpha><identifier>
+                      | <digit><identifier>
+                      | <alpha>_<identifier>
+                      | <digit>_<identifier>
+            <alpha> ::= [a-zA-Z]
 ```
