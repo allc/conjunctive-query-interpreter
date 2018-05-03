@@ -81,7 +81,7 @@ In the program, there are two expressions `select x1 x2 where` and `A(x1 x2)` th
    - Syntax of {{ cql_name }} is similar to SQL, and compatible with SQL syntax highlighting
    - Also provide TextMate language grammar json file in Appendix 4, which can be used in many editors such as TextMate, Visual Studio Code and Sublime Text to support syntax highlighting of {{ cql_name }}
 5. Skip columns in relations
-   - You can use `_[number of variables to be skipped]` to skip columns, so that, you don't have to create variables for columns that you do not need.
+   - You can use `_[number of variables to be skipped]` to skip columns, so that, you do not have to create variables for columns that you do not need.
 
      Example:
      
