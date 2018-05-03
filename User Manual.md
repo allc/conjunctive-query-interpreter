@@ -238,14 +238,14 @@ Now, you have learnt everything about this language. If you want to try more exa
      e.g. `-- This is a single line comment`
      
 2. Multiple queries in one program file
-   - You can have multiple queries in one program file, and the results would be outputted with empty lines in between
+   - You can have multiple queries in one program file, and the output results would be separated by empty lines.
 3. Error handling and informative error message
    - See Appendix 3 for details
 4. Support syntax highlighting
    - Syntax of {{ cql_name }} is similar to SQL, and compatible with SQL syntax highlighting
    - Also provide TextMate language grammar json file in Appendix 4, which can be used in many editors such as TextMate, Visual Studio Code and Sublime Text to support syntax highlighting of {{ cql_name }}
-5. Skip variables in relations
-   - You can use `_[number of variables to be skipped]` to skip variables
+5. Skip columns in relations
+   - You can use `_[number of variables to be skipped]` to skip columns, so that, you do not have to create variables for columns that you do not need.
 
      Example:
      
@@ -393,13 +393,13 @@ Parsing error at line 1 column 20 "("
   Program with x3 not in any relation:
   
   ```cql
-  select x3 where A(x1 x2);
+  select x1 x2 x3 where A(x1 x2);
   ```
   
   Error message:
   
   ```
-  Variable x1 is not declared
+  Free variable x3 not found.
   ```
   
 - Using a variable that is not declared as either a free or bound variable (not in scope or undeclared)
