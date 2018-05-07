@@ -19,7 +19,7 @@ make clean
 
 ## User Manual
 
-[User Manual](docs/User Manual.md)
+[User Manual](docs/User%20Manual.md)
 
 ## Imported Packages
 - System.Environment
