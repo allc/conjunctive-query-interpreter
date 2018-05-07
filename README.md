@@ -1,5 +1,7 @@
 # conjunctive query interpreter
 
+Paired Coursework for [COMP2212 Programming Language Concepts](https://www.southampton.ac.uk/courses/modules/comp2212.page)
+
 ## How to Compile
 ```
 make
@@ -14,6 +16,10 @@ make clean
 ```
 ./myinterpreter program_filename
 ```
+
+## User Manual
+
+[User Manual](docs/User Manual.md)
 
 ## Imported Packages
 - System.Environment
@@ -31,7 +37,7 @@ make clean
                       | <var-skip>
                       | <var> <var-list>
                       | <var-skip> <var-list>
-<conjunctive-query> ::= <conjunctive-query> ^ <conjunctive-query>
+<conjunctive-query> ::= <conjunctive-query> and <conjunctive-query>
                       | <var> = <var>
                       | <relation-symbol> ( <var-list> )
                       | exists <var> in <conjunctive-query>
