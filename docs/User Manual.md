@@ -274,13 +274,6 @@ Now, you have learnt everything about this language. If you want to try more exa
 		3
 		```
 
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-
 ## Appendix
 
 ### 1. Programs
@@ -482,7 +475,7 @@ Parsing error at line 1 column 20 "("
 
 ### 4. cql.tmLanguage JSON
 
-```JSON
+```
 {	patterns = (
 		{	name = 'comment.line.double-dash';
 			begin = '--';
