@@ -13,42 +13,42 @@ To examine the detailed syntax tree, please go to Appendix 2
 
 1. **Hello world and use interpreter in command line**
 
-  To run your program, simply open the terminal in the directory which holds the interpreter and the CSV files and run the interpreter with your program file (.cql) as an argument.
+   To run your program, simply open the terminal in the directory which holds the interpreter and the CSV files and run the interpreter with your program file (.cql) as an argument.
 
-  For example:
+   For example:
 
-  ```bash
-  ./myinterpreter myquery.cql
-  ```
+   ```bash
+   ./myinterpreter myquery.cql
+   ```
 
-  > Note: CSV files must be placed in the terminal’s current working directory.
+   > Note: CSV files must be placed in the terminal’s current working directory.
 
-  The first example program is to show the data from the *A.csv* with the following content:
-<table>
-	<tbody>
-		<tr>
-			<td>Hello</td><td>World</td>
-		</tr>
-		<tr>
-			<td>Hi</td><td>SimpleCQL</td>
-		</tr>
-	</tbody>
-</table>
+   The first example program is to show the data from the *A.csv* with the following content:
+   <table>
+   	<tbody>
+   		<tr>
+   			<td>Hello</td><td>World</td>
+   		</tr>
+   		<tr>
+   			<td>Hi</td><td>SimpleCQL</td>
+   		</tr>
+   	</tbody>
+   </table>
 
-  Create a new **Program 1** *HelloWorld.cql* file, and write your program as following: 
+   Create a new **Program 1** *HelloWorld.cql* file, and write your program as following: 
 
-  ```cql
-  select x1 x2 where A(x1 x2);
-  ```
+   ```cql
+   select x1 x2 where A(x1 x2);
+   ```
 
-  Run your program and the output is:
+   Run your program and the output is:
 
-  ```
-  Hello,World
-  Hi,SimpleCQL
-  ```
+   ```
+   Hello,World
+   Hi,SimpleCQL
+   ```
 
-  In the program, there are two expressions `select x1 x2 where` and `A(x1 x2)` that you might not be familiar with. The next section will introduce them to you.
+   In the program, there are two expressions `select x1 x2 where` and `A(x1 x2)` that you might not be familiar with. The next section will introduce them to you.
 
 2. **Simple select-where statement**
 
@@ -56,7 +56,7 @@ To examine the detailed syntax tree, please go to Appendix 2
    
    As seen in Program 1 , the query statement begins with `select` which is followed by a list of free variables `x1 x2`, and a `where` marks the end of variable list and the start of conjunctive queries `A(x1,x2)`. How to write such queries will be introduced in later sections.
 
-  By stating `select` these variables, the value of each variable in the list will be displayed as the output of the program. In other words, if there are other variables in the conjunctive query but not in `select ... where`, they will not be outputted.
+   By stating `select` these variables, the value of each variable in the list will be displayed as the output of the program. In other words, if there are other variables in the conjunctive query but not in `select ... where`, they will not be outputted.
   
 3. **Gather data from CSV files (relation)**
 
@@ -188,39 +188,39 @@ To examine the detailed syntax tree, please go to Appendix 2
    select  x1 x2 where A(x1) and B(x2) and x1 = x2;
    ```
    
-  <table style="float:left">
-		<thead>
-			<tr><th>A.csv</th><tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td>1</td><td>1</td>
-			</tr>
-			<tr>
-				<td>2</td><td>2</td>
-			</tr>
-			<tr>
-				<td>3</td><td>2</td>
-			</tr>
-		</tbody>
-	</table>
+   <table style="float:left">
+   	<thead>
+   		<tr><th>A.csv</th><tr>
+   	</thead>
+   	<tbody>
+   		<tr>
+   			<td>1</td><td>1</td>
+   		</tr>
+   		<tr>
+   			<td>2</td><td>2</td>
+   		</tr>
+   		<tr>
+   			<td>3</td><td>2</td>
+   		</tr>
+   	</tbody>
+   </table>
       
-	<table>
-		<thead>
-			<tr><th>B.csv</th><tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td>1</td>
-			</tr>
-			<tr>
-				<td>2</td>
-			</tr>
-			<tr>
-				<td>2</td>
-			</tr>
-		</tbody>
-	</table>
+   <table>
+   	<thead>
+   		<tr><th>B.csv</th><tr>
+   	</thead>
+   	<tbody>
+   		<tr>
+   			<td>1</td>
+   		</tr>
+   		<tr>
+   			<td>2</td>
+   		</tr>
+   		<tr>
+   			<td>2</td>
+   		</tr>
+   	</tbody>
+   </table>
    
    The output is:
    
@@ -256,23 +256,23 @@ Now, you have learnt everything about this language. If you want to try more exa
      Example:
      
      A.csv with the following content:
-<table>
-	<tbody>
-		<tr>
-			<td>1</td><td>2</td><td>3</td>
-		</tr>
-	</tbody>
-</table>
+     <table>
+     	<tbody>
+     		<tr>
+     			<td>1</td><td>2</td><td>3</td>
+     		</tr>
+     	</tbody>
+     </table>
 
-		```cql
-		select x1 where A(_2 x1);
-		```
-	
-		Output:
-	
-		```
-		3
-		```
+     ```cql
+     select x1 where A(_2 x1);
+     ```
+
+     Output:
+     
+     ```
+     3
+     ```
 
 ## Appendix
 
@@ -451,13 +451,13 @@ Parsing error at line 1 column 20 "("
   Example:
   
   A.csv with two columns:
-<table>
-	<tbody>
-		<tr>
-			<td>Hello</td><td>World</td>
-		</tr>
-	</tbody>
-</table>
+  <table>
+  	<tbody>
+  		<tr>
+  			<td>Hello</td><td>World</td>
+  		</tr>
+  	</tbody>
+  </table>
 
   Program with relation of three variables:
   
